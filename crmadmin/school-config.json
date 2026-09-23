@@ -1,0 +1,31 @@
+{
+  "institution": {
+    "name": "Seematic Global Academy",
+    "hubName": "Hub",
+    "fullName": "Seematic Global Academy",
+    "shortName": "SGA CMS",
+    "motto": "Excellence in Education",
+    "contactEmail": "info@seematicglobal.com",
+    "contactPhone": "9999977777",
+    "address": "SDM Campus, Sikanderpur Road, Near City Center, Uttar Pradesh",
+    "emailDomain": "seematicglobal.com"
+  },
+  "theme": {
+    "primary": "#111827",
+    "secondary": "#2563eb",
+    "accent": "#f59e0b",
+    "success": "#10b981",
+    "danger": "#ef4444",
+    "surface": "#ffffff",
+    "background": "#F8FAFC"
+  },
+  "system": {
+    "version": "v2.5.0-multitenant",
+    "status": "Stable Production",
+    "footerText": "Authorized Academic Result Governance",
+    "enableTransport": true,
+    "enableGrievance": true,
+    "enableCompliance": true,
+    "maxClass": "12TH"
+  }
+}

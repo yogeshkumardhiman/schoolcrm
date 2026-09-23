@@ -1,0 +1,112 @@
+import { StyleSheet } from 'react-native';
+import { COLORS, fontFamily } from '../../../../utils';
+
+export const styles = StyleSheet.create({
+    scrollContent: {
+        padding: 20,
+    },
+    statsGrid: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 12,
+        marginBottom: 20,
+    },
+    statCard: {
+        flex: 1,
+        borderRadius: 20,
+        padding: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.02)',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+    },
+    statIconBox: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    statValue: {
+        fontSize: 18,
+        fontFamily: fontFamily.Poppins.Black,
+        color: COLORS.primary,
+        lineHeight: 22,
+    },
+    statLabel: {
+        fontSize: 8,
+        fontFamily: fontFamily.Poppins.Bold,
+        color: COLORS.gray,
+        letterSpacing: 0.5,
+    },
+    calendarContainer: {
+        backgroundColor: COLORS.white,
+        borderRadius: 24,
+        padding: 10,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: COLORS.gray + '10',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
+    },
+    summaryBox: {
+        backgroundColor: COLORS.gray + '05',
+        borderRadius: 20,
+        padding: 16,
+        borderStyle: 'dashed',
+        borderWidth: 1,
+        borderColor: COLORS.gray + '20',
+        marginBottom: 20,
+    },
+    summaryHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: 10,
+    },
+    summaryTitle: {
+        fontSize: 10,
+        fontFamily: fontFamily.Poppins.Black,
+        color: COLORS.gray,
+        letterSpacing: 1,
+    },
+    summaryContent: {
+        gap: 4,
+    },
+    summaryText: {
+        fontSize: 12,
+        fontFamily: fontFamily.Poppins.Medium,
+        color: COLORS.primary,
+    },
+    historyBtn: {
+        backgroundColor: COLORS.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 18,
+        borderRadius: 18,
+        gap: 10,
+    },
+    historyBtnText: {
+        fontSize: 12,
+        fontFamily: fontFamily.Poppins.Black,
+        color: COLORS.white,
+        letterSpacing: 1,
+    },
+    iconBox: {
+        width: 44,
+        height: 44,
+        borderRadius: 14,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
+});

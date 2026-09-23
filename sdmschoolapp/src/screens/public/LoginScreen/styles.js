@@ -1,0 +1,156 @@
+import { StyleSheet } from 'react-native';
+import {fontFamily,screenHeight,screenWidth } from '../../../utils';
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 24,
+    backgroundColor: '#fff',
+    paddingBottom: 40,
+  },
+  header: {
+    marginTop: 60,
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#1E40AF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#1E40AF',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  logoChar: {
+    fontSize: 40,
+    fontFamily: fontFamily.Poppins.Bold,
+    color: '#fff',
+  },
+  title: {
+    fontSize: 26,
+    fontFamily: fontFamily.Poppins.ExtraBold,
+    color: '#0F172A',
+    marginBottom: 4,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontFamily: fontFamily.Poppins.SemiBold,
+    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  roleSelector: {
+    flexDirection: 'row',
+    marginBottom: 32,
+    borderRadius: 20,
+    backgroundColor: '#F8FAFC',
+    padding: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  roleOption: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    gap: 8,
+  },
+  activeRoleOption: {
+    backgroundColor: '#1E40AF',
+    shadowColor: '#1E40AF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  roleOptionText: {
+    fontSize: 15,
+    fontFamily: fontFamily.Poppins.Bold,
+    color: '#64748B',
+  },
+  activeRoleOptionText: {
+    color: '#fff',
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 10,
+    fontFamily: fontFamily.Poppins.Black,
+    color: '#94A3B8',
+    marginBottom: 8,
+    marginLeft: 4,
+    letterSpacing: 1.5,
+  },
+  input: {
+    height: 60,
+    borderWidth: 2,
+    borderColor: '#F1F5F9',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    fontFamily: fontFamily.Poppins.SemiBold,
+    color: '#0F172A',
+    backgroundColor: '#F8FAFC',
+  },
+  passwordWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#F1F5F9',
+    borderRadius: 20,
+    backgroundColor: '#F8FAFC',
+  },
+  eyeIcon: {
+    paddingHorizontal: 20,
+  },
+  loginButton: {
+    backgroundColor: '#1E40AF',
+    height: 64,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    shadowColor: '#1E40AF',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: fontFamily.Poppins.ExtraBold,
+    letterSpacing: 1,
+  },
+  forgotPassword: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  forgotPasswordText: {
+    color: '#1E40AF',
+    fontSize: 14,
+    fontFamily: fontFamily.Poppins.Bold,
+  },
+  footer: {
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 10,
+    fontFamily: fontFamily.Poppins.SemiBold,
+    color: '#CBD5E1',
+    letterSpacing: 1,
+  }
+});
+
+export default styles;

@@ -1,0 +1,12 @@
+export * as AuthFeature from './auth';
+export * as RbacFeature from './rbac';
+export * as StudentsFeature from './students';
+export * as StaffFeature from './staff';
+export * as FeesFeature from './fees';
+export * as AcademicFeature from './academic';
+export * as TransportFeature from './transport';
+export * as SalaryFeature from './salary';
+export * as SettingsFeature from './settings';
+export * as AttendanceFeature from './attendance';
+export * as ReportsFeature from './reports';
+export * as WebsiteFeature from './website';

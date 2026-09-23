@@ -1,0 +1,82 @@
+# Dependencies
+**/node_modules/
+node_modules/
+.pnp
+.pnp.js
+.pnp.*
+
+# Build outputs
+**/dist/
+dist/
+**/build/
+build/
+**/.next/
+.next/
+**/out/
+out/
+**/.turbo/
+**/.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Mobile Native Builds (Android / iOS)
+**/android/build/
+**/android/app/build/
+**/android/.gradle/
+**/android/.cxx/
+**/android/local.properties
+**/DerivedData/
+**/Pods/
+**/*.hmap
+**/*.ipa
+**/*.apk
+**/*.aab
+**/*.jsbundle
+**/*.xcuserstate
+**/*.moved-aside
+**/.xcode.env.local
+
+# Keystores & Keys
+**/*.keystore
+!**/debug.keystore
+**/*.jks
+**/*-key.json
+**/firebase-key.json
+**/*.pem
+
+# Environment variables
+**/.env*
+!**/.env.example
+
+# Logs
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/lerna-debug.log*
+**/.pnpm-debug.log*
+
+# Uploads & Temporary files
+**/uploads/
+**/tmp/
+**/temp/
+**/.cache/
+**/scratch/
+
+# Testing & Coverage
+**/coverage/
+**/.nyc_output/
+
+# OS and Editor files
+**/.DS_Store
+.DS_Store
+Thumbs.db
+**/.idea/
+**/.vscode/*
+!**/.vscode/settings.json
+!**/.vscode/tasks.json
+!**/.vscode/launch.json
+!**/.vscode/extensions.json
+*.sublime-workspace
+*.swp
+*.swo
