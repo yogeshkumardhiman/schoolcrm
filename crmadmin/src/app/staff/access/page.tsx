@@ -37,6 +37,7 @@ import {
 } from "@/components/dialogbox/dialog";
 import { ConfirmDialog } from "@/components/dialogbox/ConfirmDialog";
 import { useAuth } from "@/components/AbilityProvider";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 interface PermissionItem {
   id: string;
@@ -284,7 +285,8 @@ export default function AccessControlPage() {
   );
 
   return (
-    <div className="p-8 md:p-10 space-y-8 bg-[#F8FAFC] min-h-screen font-sans">
+    <ProtectedRoute permission="rbac:role_manage" roles={["SUPER_ADMIN", "ADMIN"]}>
+      <div className="p-8 md:p-10 space-y-8 bg-[#F8FAFC] min-h-screen font-sans">
       {/* 🛡️ TOP HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm">
         <div className="space-y-1">
@@ -838,5 +840,6 @@ export default function AccessControlPage() {
         type="danger"
       />
     </div>
+    </ProtectedRoute>
   );
 }

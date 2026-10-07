@@ -1,16 +1,14 @@
-import schoolConfig from "../../school-config.json";
-
 export const APP_CONFIG = {
   institution: {
-    name: schoolConfig.institution.name || "SDM",
-    hubName: schoolConfig.institution.hubName || "Hub",
-    fullName: schoolConfig.institution.fullName || "S.D.M. Public School",
-    shortName: schoolConfig.institution.shortName || "SDM CMS",
-    motto: schoolConfig.institution.motto || "Excellence in Education",
-    contactEmail: schoolConfig.institution.contactEmail || "info@sdm.com",
-    contactPhone: schoolConfig.institution.contactPhone || "9999988888",
-    address: schoolConfig.institution.address || "Institutional Campus",
-    emailDomain: schoolConfig.institution.emailDomain || "sdm.com"
+    name: "School",
+    hubName: "Hub",
+    fullName: "School Campus",
+    shortName: "School ERP",
+    motto: "Excellence in Education",
+    contactEmail: "",
+    contactPhone: "",
+    address: "Institutional Campus",
+    emailDomain: ""
   },
 
   academic: {
@@ -46,23 +44,23 @@ export const APP_CONFIG = {
   },
 
   system: {
-    version: schoolConfig.system.version || "v2.5.0",
-    status: schoolConfig.system.status || "Stable Production",
-    footerText: schoolConfig.system.footerText || "Authorized Academic Result Governance",
-    enableTransport: schoolConfig.system.enableTransport !== false,
-    enableGrievance: schoolConfig.system.enableGrievance !== false,
-    enableCompliance: schoolConfig.system.enableCompliance !== false,
-    maxClass: schoolConfig.system.maxClass || "12TH"
+    version: "v2.5.0",
+    status: "Stable Production",
+    footerText: "Authorized Academic Result Governance",
+    enableTransport: true,
+    enableGrievance: true,
+    enableCompliance: true,
+    maxClass: "12TH"
   },
 
   theme: {
-    primary: schoolConfig.theme.primary || "#111827", // Slate 900 (Executive Dark)
-    secondary: schoolConfig.theme.secondary || "#2563eb", // Blue 600 (Academic Blue)
-    accent: schoolConfig.theme.accent || "#f59e0b", // Amber 500 (Alert/Highlight)
-    success: schoolConfig.theme.success || "#10b981", // Emerald 500
-    danger: schoolConfig.theme.danger || "#ef4444", // Red 500
-    surface: schoolConfig.theme.surface || "#ffffff",
-    background: schoolConfig.theme.background || "#F8FAFC",
+    primary: "#111827", // Slate 900 (Executive Dark)
+    secondary: "#2563eb", // Blue 600 (Academic Blue)
+    accent: "#f59e0b", // Amber 500 (Alert/Highlight)
+    success: "#10b981", // Emerald 500
+    danger: "#ef4444", // Red 500
+    surface: "#ffffff",
+    background: "#F8FAFC",
   },
 
   fonts: {
@@ -74,12 +72,12 @@ export const APP_CONFIG = {
 
   auth: {
     tokens: {
-      auth: `${(schoolConfig.institution.name || "crm").toLowerCase()}_auth_token`,
-      role: `${(schoolConfig.institution.name || "crm").toLowerCase()}_user_role`,
-      id: `${(schoolConfig.institution.name || "crm").toLowerCase()}_user_id`,
-      class: `${(schoolConfig.institution.name || "crm").toLowerCase()}_user_class`,
-      data: `${(schoolConfig.institution.name || "crm").toLowerCase()}_user_data`,
-      permissions: `${(schoolConfig.institution.name || "crm").toLowerCase()}_user_permissions`,
+      auth: "crm_auth_token",
+      role: "crm_user_role",
+      id: "crm_user_id",
+      class: "crm_user_class",
+      data: "crm_user_data",
+      permissions: "crm_user_permissions",
     }
   }
 };

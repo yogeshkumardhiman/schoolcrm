@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -410,7 +411,7 @@ export default function TeacherForm() {
         image: finalImageUrl,
         documents: finalDocs,
         email: data.email.trim().toLowerCase(),
-        loginId: undefined // backend auto-generates uppercase SDM... ID
+        loginId: undefined // backend auto-generates staff login ID
       };
 
       // 🛡️ Single Principal Guard: Check if Principal already exists

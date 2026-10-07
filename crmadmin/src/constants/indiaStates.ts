@@ -1,5 +1,5 @@
 export const INDIAN_STATES_AND_UTS = [
-  "Uttar Pradesh", // Default selection for SDM Public School
+  "Uttar Pradesh",
   "Delhi (NCT)",
   "Uttarakhand",
   "Haryana",

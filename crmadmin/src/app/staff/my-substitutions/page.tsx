@@ -12,7 +12,7 @@ import {
   Loader2,
   Users
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 
 import toast from "react-hot-toast";
 import { useAuth } from "@/components/AbilityProvider";

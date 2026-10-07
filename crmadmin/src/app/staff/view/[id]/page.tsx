@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   User,
@@ -35,11 +36,13 @@ import {
   Building,
   FileCheck,
   IdCard,
-  UserCheck
+  UserCheck,
+  KeyRound
 } from "lucide-react";
 import client from "@/lib/client";
 import { useAuth } from "@/components/AbilityProvider";
 import { RecordPaymentModal } from "@/features/fees";
+import { ResetStaffPasswordDialog } from "../../components/ResetStaffPasswordDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,6 +59,7 @@ export default function StaffViewPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "academics" | "documents" | "payroll" | "leaves">("profile");
   const [copiedId, setCopiedId] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
 
   // 🔍 Query: Target Staff Member Full Record
   const { data: staff, isLoading: dataLoading, error } = useQuery({
@@ -166,6 +170,16 @@ export default function StaffViewPage() {
         </Button>
 
         <div className="flex items-center gap-3">
+          {isAuthorized && (
+            <Button
+              onClick={() => setShowResetPasswordModal(true)}
+              variant="outline"
+              className="h-11 px-5 rounded-2xl border-amber-200 bg-amber-50/60 hover:bg-amber-100 text-amber-800 font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-xs cursor-pointer"
+            >
+              <KeyRound size={15} className="text-amber-600" /> Reset Password & Mail
+            </Button>
+          )}
+
           <Button
             onClick={() => router.push(`/staff/edit/${staff.id}`)}
             className="h-11 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm"
@@ -696,6 +710,15 @@ export default function StaffViewPage() {
           onOpenChange={setShowPaymentModal}
           onSubmit={handleProcessPayment}
           isPending={paymentMutation.isPending}
+        />
+      )}
+
+      {/* 🔑 RESET PASSWORD & MAIL MODAL */}
+      {isAuthorized && (
+        <ResetStaffPasswordDialog
+          isOpen={showResetPasswordModal}
+          onClose={() => setShowResetPasswordModal(false)}
+          staff={staff}
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@bprogress/next/app';
 import StudentForm from '@/features/students/components/StudentForm';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/AbilityProvider';

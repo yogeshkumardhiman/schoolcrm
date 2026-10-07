@@ -167,7 +167,7 @@ export class ReportsService {
     const attendancePercentage =
       totalStudents > 0 && presentStudentsToday > 0
         ? ((presentStudentsToday / totalStudents) * 100).toFixed(1)
-        : '94.8';
+        : null;
 
     const presentTeachersToday = await this.staffAttendanceRepository.count({
       where: { date: today, status: 'PRESENT' },
@@ -176,7 +176,7 @@ export class ReportsService {
     const staffAttendancePercentage =
       totalTeachers > 0 && presentTeachersToday > 0
         ? ((presentTeachersToday / totalTeachers) * 100).toFixed(1)
-        : '95.2';
+        : null;
 
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
@@ -220,15 +220,37 @@ export class ReportsService {
       receiptNo: `REC-${String(p.id).padStart(5, '0')}`,
     }));
 
-    // Generate 7-day attendance trend
-    const attendanceTrend = [6, 5, 4, 3, 2, 1, 0].map((daysAgo) => {
+    // Real 7-day attendance trend
+    const past7Days = [6, 5, 4, 3, 2, 1, 0].map((daysAgo) => {
       const d = new Date();
       d.setDate(d.getDate() - daysAgo);
-      const dateStr = d.toISOString().split('T')[0];
-      const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
-      const pct = (93.5 + (daysAgo % 3) * 1.4).toFixed(1);
-      const total = totalStudents || 651;
-      const present = Math.round((total * parseFloat(pct)) / 100);
+      return {
+        dateStr: d.toISOString().split('T')[0],
+        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      };
+    });
+
+    const datesList = past7Days.map((p) => p.dateStr);
+
+    const pastAttendanceCounts = await this.attendanceRepository
+      .createQueryBuilder('att')
+      .select('att.date', 'date')
+      .addSelect('COUNT(att.id)', 'count')
+      .where('att.date IN (:...dates)', { dates: datesList })
+      .andWhere('att.status = :status', { status: 'PRESENT' })
+      .andWhere('UPPER(att.class) IN (:...classes)', { classes: configuredClasses })
+      .groupBy('att.date')
+      .getRawMany();
+
+    const attendanceMap = new Map<string, number>();
+    pastAttendanceCounts.forEach((row) => {
+      attendanceMap.set(row.date, parseInt(row.count, 10) || 0);
+    });
+
+    const attendanceTrend = past7Days.map(({ dateStr, dayName }) => {
+      const present = attendanceMap.get(dateStr) || 0;
+      const total = totalStudents || 0;
+      const pct = total > 0 && present > 0 ? ((present / total) * 100).toFixed(1) : '0';
       return {
         date: dateStr,
         day: dayName,
@@ -255,25 +277,7 @@ export class ReportsService {
     }));
 
     const combinedUpcoming = [...realEvents, ...realNotices];
-    const upcomingEvents =
-      combinedUpcoming.length > 0
-        ? combinedUpcoming.slice(0, 4)
-        : [
-            {
-              id: 'fallback-1',
-              title: 'Annual Sports Meet & Athletic Championship',
-              date: '28 Aug 2026',
-              time: '08:30 AM - 01:30 PM',
-              location: 'School Sports Complex',
-            },
-            {
-              id: 'fallback-2',
-              title: 'Parent-Teacher Conference (Term 1)',
-              date: '05 Sep 2026',
-              time: '09:00 AM - 03:00 PM',
-              location: 'Academic Classrooms',
-            },
-          ];
+    const upcomingEvents = combinedUpcoming.slice(0, 4);
 
     const actionRequired: any[] = [];
     if (absentTeachersToday > activeSubstitutions) {

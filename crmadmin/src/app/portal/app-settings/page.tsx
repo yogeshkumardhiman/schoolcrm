@@ -558,7 +558,7 @@ export default function AppSettingsManager() {
                         value={settingsForm.school_name}
                         onChange={e => setSettingsForm(prev => ({ ...prev, school_name: e.target.value }))}
                         className="h-11 rounded-lg font-bold text-sm"
-                        placeholder="E.G. SDM PUBLIC SCHOOL"
+                        placeholder="e.g. Greenfield Public School"
                         required
                       />
                     </div>
@@ -569,7 +569,7 @@ export default function AppSettingsManager() {
                         value={settingsForm.app_title}
                         onChange={e => setSettingsForm(prev => ({ ...prev, app_title: e.target.value }))}
                         className="h-11 rounded-lg font-bold text-sm"
-                        placeholder="E.G. SDM SCHOOL"
+                        placeholder="e.g. School App"
                         required
                       />
                     </div>

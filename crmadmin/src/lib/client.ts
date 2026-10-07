@@ -22,8 +22,12 @@ async function handleResponse(response: Response) {
   if (!response.ok) {
     if (response.status === 401) {
       if (typeof window !== 'undefined') {
+        const pastDate = 'Thu, 01 Jan 1970 00:00:01 GMT';
+        document.cookie = `${APP_CONFIG.auth.tokens.auth}=; path=/; expires=${pastDate};`;
+        document.cookie = `sdm_auth_token=; path=/; expires=${pastDate};`;
         localStorage.clear();
-        window.location.replace('/login');
+        window.dispatchEvent(new Event('crm_auth_update'));
+        window.location.href = '/login';
       }
     }
     const error = await response.json().catch(() => ({ error: 'Unknown API error' }));

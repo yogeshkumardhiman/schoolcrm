@@ -30,13 +30,6 @@ interface FAQ {
   a: string;
 }
 
-const DEFAULT_FAQS: FAQ[] = [
-  { q: "What is the admission procedure for new students?", a: "Parents can fill out the online registration form or collect the prospectus from the school reception counter during working hours (8:00 AM - 2:00 PM)." },
-  { q: "Which school curriculum board is followed?", a: "We are strictly affiliated with the Central Board of Secondary Education (CBSE), New Delhi, following the latest NCERT guidelines." },
-  { q: "Is transport facility available across the city?", a: "Yes, our GPS-enabled fleet of modern school buses covers all major city routes with certified lady attendants and CCTV cameras." },
-  { q: "What are the school working hours?", a: "Summer: 7:30 AM to 1:30 PM | Winter: 8:00 AM to 2:00 PM (Monday to Saturday)." }
-];
-
 export default function ContactSettingsPage() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({
@@ -56,7 +49,7 @@ export default function ContactSettingsPage() {
     linkedinUrl: "",
     twitterUrl: "",
     whatsappSocialUrl: "",
-    faqs: DEFAULT_FAQS
+    faqs: [] as FAQ[]
   });
 
   const { data, isLoading } = useQuery({
@@ -86,7 +79,7 @@ export default function ContactSettingsPage() {
         linkedinUrl: data.linkedinUrl || data.socialLinks?.linkedin || "",
         twitterUrl: data.twitterUrl || data.socialLinks?.twitter || "",
         whatsappSocialUrl: data.whatsappSocialUrl || data.socialLinks?.whatsapp || "",
-        faqs: Array.isArray(data.faqs) && data.faqs.length > 0 ? data.faqs : DEFAULT_FAQS
+        faqs: Array.isArray(data.faqs) ? data.faqs : []
       });
     }
   }, [data]);
@@ -139,7 +132,7 @@ export default function ContactSettingsPage() {
   const addFaq = () => {
     setForm((prev) => ({
       ...prev,
-      faqs: [...prev.faqs, { q: "New Question Here?", a: "Detailed answer for parents..." }]
+      faqs: [...prev.faqs, { q: "", a: "" }]
     }));
   };
 
@@ -278,7 +271,7 @@ export default function ContactSettingsPage() {
                   <Input
                     value={form.contactEmail}
                     onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
-                    placeholder="info@sdmschool.in"
+                    placeholder="e.g. info@schoolname.com"
                     className="h-10 rounded-xl font-medium text-xs"
                   />
                 </div>
@@ -287,7 +280,7 @@ export default function ContactSettingsPage() {
                   <Input
                     value={form.contactEmail2}
                     onChange={(e) => setForm({ ...form, contactEmail2: e.target.value })}
-                    placeholder="admissions@sdmschool.in"
+                    placeholder="e.g. admissions@schoolname.com"
                     className="h-10 rounded-xl text-xs"
                   />
                 </div>
@@ -400,40 +393,57 @@ export default function ContactSettingsPage() {
               </Button>
             </CardHeader>
             <CardContent className="p-6 space-y-3">
-              {form.faqs.map((faq, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/40 space-y-2 relative group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-                      Q{idx + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeFaq(idx)}
-                      className="text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors"
-                      title="Delete FAQ"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-
-                  <Input
-                    value={faq.q}
-                    onChange={(e) => updateFaq(idx, "q", e.target.value)}
-                    placeholder="Enter parent query..."
-                    className="h-8 rounded-lg font-bold text-xs bg-white"
-                  />
-                  <textarea
-                    value={faq.a}
-                    onChange={(e) => updateFaq(idx, "a", e.target.value)}
-                    placeholder="Enter clear answer..."
-                    rows={2}
-                    className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium bg-white focus:border-blue-500 focus:outline-hidden transition-all"
-                  />
+              {form.faqs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <HelpCircle className="h-8 w-8 text-slate-300 mb-2" />
+                  <h4 className="text-xs font-bold text-slate-700">No FAQs Configured</h4>
+                  <p className="text-[11px] text-slate-400 max-w-xs mt-0.5 mb-3">
+                    Add frequently asked questions to clarify admissions, timings, transport, and curriculum policies.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={addFaq}
+                    className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus size={12} /> Add First FAQ
+                  </Button>
                 </div>
-              ))}
+              ) : (
+                form.faqs.map((faq, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-2xl border border-slate-200/80 bg-slate-50/40 space-y-2 relative group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+                        Q{idx + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeFaq(idx)}
+                        className="text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors"
+                        title="Delete FAQ"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+
+                    <Input
+                      value={faq.q}
+                      onChange={(e) => updateFaq(idx, "q", e.target.value)}
+                      placeholder="Enter parent query..."
+                      className="h-8 rounded-lg font-bold text-xs bg-white"
+                    />
+                    <textarea
+                      value={faq.a}
+                      onChange={(e) => updateFaq(idx, "a", e.target.value)}
+                      placeholder="Enter clear answer..."
+                      rows={2}
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium bg-white focus:border-blue-500 focus:outline-hidden transition-all"
+                    />
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

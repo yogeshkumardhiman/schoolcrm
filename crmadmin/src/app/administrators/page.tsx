@@ -35,6 +35,7 @@ import {
 } from "@/components/dialogbox/dialog";
 import { ConfirmDialog } from "@/components/dialogbox/ConfirmDialog";
 import { useAuth } from "@/components/AbilityProvider";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 interface AdminUser {
   id: number;
@@ -100,7 +101,7 @@ export default function AdministratorsPage() {
     const rand = Math.floor(1000 + Math.random() * 9000);
     setAdminForm({
       email: "",
-      loginId: `SDM${year}ADM${rand}`,
+      loginId: `ADM${year}${rand}`,
       password: "admin" + Math.floor(100 + Math.random() * 900)
     });
     setIsCreateModalOpen(true);
@@ -176,7 +177,8 @@ export default function AdministratorsPage() {
   );
 
   return (
-    <div className="p-8 md:p-10 space-y-8 bg-[#F8FAFC] min-h-screen font-sans">
+    <ProtectedRoute roles={["SUPER_ADMIN"]}>
+      <div className="p-8 md:p-10 space-y-8 bg-[#F8FAFC] min-h-screen font-sans">
       {/* 🛡️ HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm">
         <div className="flex items-center gap-3.5">
@@ -498,5 +500,6 @@ export default function AdministratorsPage() {
         type="danger"
       />
     </div>
+    </ProtectedRoute>
   );
 }

@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import {
   LayoutDashboard,
   Users,
@@ -258,7 +259,7 @@ const menuSections: MenuSection[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loading: authLoading, permissions } = useAuth();
+  const { user, loading: authLoading, permissions, logout } = useAuth();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -300,7 +301,8 @@ export function Sidebar() {
     }
   }, [pathname]);
 
-  const role = user?.role || clientRole || 'SUPER_ADMIN';
+  // 🔒 Security Fix: Never default to SUPER_ADMIN on missing/empty role
+  const role = user?.role || clientRole || '';
   const rawRole = role || '';
   const normalizedRole = rawRole.trim().toUpperCase();
   const effectiveRole = normalizedRole === 'MANAGEMENT' ? 'PRINCIPAL' : normalizedRole;
@@ -308,7 +310,7 @@ export function Sidebar() {
   const isActualClassTeacher = Boolean(userClass && userClass !== 'NONE' && userClass !== '');
 
   // 🛡️ Dynamic RBAC Permission Check
-  const isSubItemVisible = (subItem: NavSubItem): boolean => {
+  const isSubItemVisible = React.useCallback((subItem: NavSubItem): boolean => {
     // Teacher-personal self-service items (only for teachers, not Super Admin/Admin)
     if (subItem.id === 'my-substitutions') {
       return effectiveRole === 'TEACHER' || effectiveRole === 'CLASS_TEACHER';
@@ -358,10 +360,10 @@ export function Sidebar() {
 
     // General self-service items (My Attendance, My Leaves, My Timetable, Support)
     return true;
-  };
+  }, [effectiveRole, permissions, isActualClassTeacher]);
 
   // Check if parent navigation item is accessible
-  const isItemVisible = (item: NavItem): boolean => {
+  const isItemVisible = React.useCallback((item: NavItem): boolean => {
     if (effectiveRole === 'SUPER_ADMIN' || effectiveRole === 'ADMIN') return true;
 
     // If parent item requires direct permission
@@ -376,7 +378,29 @@ export function Sidebar() {
     }
 
     return true;
-  };
+  }, [effectiveRole, permissions, isSubItemVisible]);
+
+  // 🚀 Performance Optimization: Memoize visible menu sections
+  const visibleMenuSections = React.useMemo(() => {
+    if (!mounted) return [];
+    return menuSections
+      .map((section) => {
+        const visibleItems = section.items
+          .map((item) => {
+            const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
+            if (hasSubItems) {
+              const visibleSubItems = item.subItems?.filter(isSubItemVisible) || [];
+              if (visibleSubItems.length === 0) return null;
+              return { ...item, subItems: visibleSubItems };
+            }
+            return isItemVisible(item) ? item : null;
+          })
+          .filter(Boolean) as NavItem[];
+
+        return { ...section, items: visibleItems };
+      })
+      .filter((section) => section.items.length > 0);
+  }, [mounted, effectiveRole, permissions, isActualClassTeacher, isSubItemVisible, isItemVisible]);
 
   // Collect all possible hrefs across all sections to compute precise longest-prefix matches
   const allPossibleHrefs = React.useMemo(() => {
@@ -441,17 +465,8 @@ export function Sidebar() {
   };
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      const { tokens } = APP_CONFIG.auth;
-      localStorage.removeItem(tokens.auth);
-      localStorage.removeItem(tokens.role);
-      localStorage.removeItem(tokens.id);
-      localStorage.removeItem(tokens.class);
-      localStorage.removeItem(tokens.data);
-      localStorage.removeItem(`${process.env.NEXT_PUBLIC_STORAGE_PREFIX}_active_session`);
-      setShowConfirm(false);
-      router.replace('/login');
-    }
+    setShowConfirm(false);
+    logout();
   };
 
   const isExcludedPath = pathname === '/login';
@@ -497,19 +512,16 @@ export function Sidebar() {
                 <div key={i} className="h-9 w-full rounded-xl bg-white/5 animate-pulse" />
               ))}
             </div>
-          ) : menuSections.map((section) => {
-            const visibleItems = section.items.filter(isItemVisible);
-            if (visibleItems.length === 0) return null;
-
+          ) : visibleMenuSections.map((section) => {
             return (
               <div key={section.title} className="space-y-1.5">
                 <h3 className="px-3 text-[9px] font-black text-white/30 uppercase tracking-[3px] font-heading">
                   {section.title}
                 </h3>
                 <nav className="space-y-1">
-                  {visibleItems.map((item: NavItem) => {
+                  {section.items.map((item: NavItem) => {
                     const hasSubItems = Boolean(item.subItems && item.subItems.length > 0);
-                    const visibleSubItems = item.subItems ? item.subItems.filter(isSubItemVisible) : [];
+                    const visibleSubItems = item.subItems || [];
 
                     // Single Item Navigation (No Submenu)
                     if (!hasSubItems || visibleSubItems.length === 0) {

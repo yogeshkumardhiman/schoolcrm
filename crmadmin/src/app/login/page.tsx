@@ -6,7 +6,7 @@ import client from "@/lib/client";
 import { toast } from "react-hot-toast";
 import { Mail, Lock, Eye, EyeOff, Loader2, School as SchoolIcon } from "lucide-react";
 import { APP_CONFIG } from "@/constants/config";
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@bprogress/next/app';
 
 export default function SchoolLogin() {
     const router = useRouter();
@@ -43,9 +43,22 @@ export default function SchoolLogin() {
 
     React.useEffect(() => {
         if (typeof window !== "undefined") {
-            const token = localStorage.getItem(APP_CONFIG.auth.tokens.auth);
+            const token =
+                localStorage.getItem(APP_CONFIG.auth.tokens.auth) ||
+                localStorage.getItem("crm_auth_token") ||
+                localStorage.getItem("sdm_auth_token");
+
             if (token) {
-                router.replace('/');
+                // Ensure cookies are synchronized for Next.js proxy
+                const isSecure = window.location.protocol === "https:";
+                const secureFlag = isSecure ? "; Secure" : "";
+                document.cookie = `crm_auth_token=${encodeURIComponent(token)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+                document.cookie = `sdm_auth_token=${encodeURIComponent(token)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+
+                const searchParams = new URLSearchParams(window.location.search);
+                const redirectParam = searchParams.get("redirect");
+                const targetUrl = redirectParam && redirectParam.startsWith("/") && redirectParam !== "/login" ? redirectParam : "/";
+                router.replace(targetUrl);
             } else {
                 setCheckingAuth(false);
             }
@@ -88,10 +101,20 @@ export default function SchoolLogin() {
 
                 // Store core auth data
                 localStorage.setItem(tokens.auth, data.token);
+                localStorage.setItem("crm_auth_token", data.token);
+                localStorage.setItem("sdm_auth_token", data.token);
                 localStorage.setItem(tokens.role, String(userRole).toUpperCase());
                 localStorage.setItem(tokens.id, String(userObj.id || userObj.userId || ''));
                 localStorage.setItem(tokens.data, JSON.stringify(userObj));
                 localStorage.setItem(tokens.permissions, JSON.stringify(userObj.permissions || []));
+
+                // 🍪 Write auth cookies for Edge Proxy route protection
+                if (typeof document !== "undefined") {
+                    const isSecure = window.location.protocol === "https:";
+                    const secureFlag = isSecure ? "; Secure" : "";
+                    document.cookie = `crm_auth_token=${encodeURIComponent(data.token)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+                    document.cookie = `sdm_auth_token=${encodeURIComponent(data.token)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+                }
 
                 // Trigger global sync for AbilityProvider
                 if (typeof window !== 'undefined') {
@@ -99,17 +122,23 @@ export default function SchoolLogin() {
                 }
 
                 // Store essential profile data
-                localStorage.setItem(`${process.env.NEXT_PUBLIC_STORAGE_PREFIX || 'crm'}_user_name`, userObj.name || userObj.email || 'User');
-                localStorage.setItem(`${process.env.NEXT_PUBLIC_STORAGE_PREFIX || 'crm'}_user_email`, userObj.email || '');
-                localStorage.setItem(`${process.env.NEXT_PUBLIC_STORAGE_PREFIX || 'crm'}_user_image`, userObj.image || '');
+                localStorage.setItem('crm_user_name', userObj.name || userObj.email || 'User');
+                localStorage.setItem('crm_user_email', userObj.email || '');
+                localStorage.setItem('crm_user_image', userObj.image || '');
 
                 if (userRole.toUpperCase() === 'TEACHER') {
                     localStorage.setItem(tokens.class, userObj.class || '');
-                    localStorage.setItem(`${process.env.NEXT_PUBLIC_STORAGE_PREFIX || 'crm'}_user_section`, userObj.section || '');
+                    localStorage.setItem('crm_user_section', userObj.section || '');
                 }
 
                 toast.success(`Welcome Back, ${userObj.name || userObj.email || 'User'}!`);
-                router.push("/");
+
+                // Redirect to target URL (e.g. from ?redirect=/staff)
+                const searchParams = new URLSearchParams(window.location.search);
+                const redirectParam = searchParams.get("redirect");
+                const targetUrl = redirectParam && redirectParam.startsWith("/") && redirectParam !== "/login" ? redirectParam : "/";
+
+                router.replace(targetUrl);
             } else {
                 toast.error("Login failed: Invalid server response.");
             }

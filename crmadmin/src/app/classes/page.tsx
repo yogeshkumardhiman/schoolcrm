@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import client from "@/lib/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSessionContext } from "@/contexts/SessionContext";

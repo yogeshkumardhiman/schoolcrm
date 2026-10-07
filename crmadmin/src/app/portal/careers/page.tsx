@@ -41,117 +41,16 @@ interface JobOpening {
   isActive?: boolean;
 }
 
-const DEFAULT_JOBS: JobOpening[] = [
-  {
-    id: 1,
-    title: "PGT - Senior Physics / Mathematics",
-    department: "Senior Secondary",
-    type: "Full Time / Permanent",
-    experience: "3–6 Years",
-    qualification: "M.Sc. Physics/Maths + B.Ed. (CBSE Curriculum)",
-    location: "Main Campus",
-    description: "Seeking a passionate and results-driven PGT mentor capable of guiding Senior Secondary students for CBSE Board excellence and competitive entrance exams.",
-    requirements: [
-      "Master's Degree (M.Sc.) in Physics or Mathematics with minimum 55% aggregate",
-      "Recognized B.Ed. degree from an NCTE approved university",
-      "Proven track record of high board results (Classes XI & XII)",
-      "Strong proficiency with Smart Board tools & modern pedagogical simulations"
-    ],
-    isActive: true
-  },
-  {
-    id: 2,
-    title: "TGT - English & Social Sciences",
-    department: "Secondary",
-    type: "Full Time",
-    experience: "2–5 Years",
-    qualification: "M.A. / B.A. English (Hons) + B.Ed.",
-    location: "Main Campus",
-    description: "Inspire middle and high school scholars with interactive language labs, literature appreciation, debate mentoring, and critical thinking skills.",
-    requirements: [
-      "B.A./M.A. in English Literature / Social Sciences + B.Ed.",
-      "Fluency in spoken and written English with excellent articulation",
-      "Experience conducting school assemblies, MUNs, and drama clubs",
-      "CTET / State TET qualification is preferred"
-    ],
-    isActive: true
-  },
-  {
-    id: 3,
-    title: "TGT - Computer Science & AI Robotics",
-    department: "Secondary",
-    type: "Full Time",
-    experience: "2–4 Years",
-    qualification: "B.Tech (CS/IT) / MCA / M.Sc. Computer Science",
-    location: "Innovation Lab",
-    description: "Lead our computer laboratory, teaching Python, Scratch, Artificial Intelligence fundamentals, and IoT robotics projects to budding innovators.",
-    requirements: [
-      "B.Tech / B.E. / MCA in Computer Science or Information Technology",
-      "Hands-on command in Python, Web Basics (HTML/CSS), and STEM kits",
-      "Ability to prepare students for national level coding hackathons & olympiads"
-    ],
-    isActive: true
-  },
-  {
-    id: 4,
-    title: "Primary Teacher (PRT - All Core Subjects)",
-    department: "Primary",
-    type: "Full Time",
-    experience: "1–4 Years",
-    qualification: "Graduate in Any Discipline + B.Ed. / D.El.Ed.",
-    location: "Primary Wing",
-    description: "Nurture foundational literacy, numeracy, and social-emotional curiosity for students of Classes I to V in a joyful, vibrant classroom setting.",
-    requirements: [
-      "Graduation + B.Ed. or D.El.Ed. qualification",
-      "Patient, creative, and activity-based experiential teaching approach",
-      "Proficiency in bilingual classroom delivery (English & Hindi)"
-    ],
-    isActive: true
-  },
-  {
-    id: 5,
-    title: "Head Physical Education & Sports Coach",
-    department: "Sports & Fitness",
-    type: "Full Time",
-    experience: "2–5 Years",
-    qualification: "B.P.Ed. / M.P.Ed. from Recognized University",
-    location: "Athletic Arena",
-    description: "Direct our multi-sport campus programs including Football, Basketball, Cricket, Badminton, and annual athletics meets with structured fitness drills.",
-    requirements: [
-      "B.P.Ed. or M.P.Ed. with specialization in team sports",
-      "National / State level participation certification preferred",
-      "First-aid, emergency response, and student safety certification"
-    ],
-    isActive: true
-  },
-  {
-    id: 6,
-    title: "Chief Librarian & Digital Media Specialist",
-    department: "Administration",
-    type: "Full Time",
-    experience: "1–3 Years",
-    qualification: "B.Lib.I.Sc. / M.Lib.I.Sc.",
-    location: "Central Library",
-    description: "Curate our 8,000+ volume knowledge resource centre, manage RFID cataloging, and foster a rich reading club culture among students.",
-    requirements: [
-      "Degree in Library & Information Science",
-      "Experience with digital library software & e-book management systems",
-      "Strong organizational acumen and student engagement passion"
-    ],
-    isActive: true
-  }
-];
-
 export default function CareerSettingsPage() {
   const queryClient = useQueryClient();
-  const [jobs, setJobs] = useState<JobOpening[]>(DEFAULT_JOBS);
+  const [jobs, setJobs] = useState<JobOpening[]>([]);
   const [hrConfig, setHrConfig] = useState({
-    sessionTag: "FACULTY RECRUITMENT • ACADEMIC SESSION 2026-27",
-    headline: "Shape the Future of Tomorrow's Leaders",
-    subheadline: "Join our dynamic fraternity of educators and mentors dedicated to CBSE excellence.",
-    hrPhone: "+91 73519 96239",
-    hrEmail: "careers@sdmschool.in",
-    walkinTimings: "Mon – Sat (10:00 AM – 2:00 PM)"
+    sessionTag: "",
+    headline: "",
+    subheadline: "",
+    hrPhone: "",
+    hrEmail: "",
+    walkinTimings: ""
   });
 
   // Modal / Form state for adding/editing job
@@ -169,7 +68,7 @@ export default function CareerSettingsPage() {
 
   useEffect(() => {
     if (data?.careers_config) {
-      if (Array.isArray(data.careers_config.jobs) && data.careers_config.jobs.length > 0) {
+      if (Array.isArray(data.careers_config.jobs)) {
         setJobs(data.careers_config.jobs);
       }
       if (data.careers_config.hrConfig) {
@@ -207,11 +106,11 @@ export default function CareerSettingsPage() {
       title: "",
       department: "Senior Secondary",
       type: "Full Time",
-      experience: "2-5 Years",
+      experience: "",
       qualification: "",
-      location: "Main Campus",
+      location: "",
       description: "",
-      requirements: ["B.Ed. or relevant degree mandatory", "Minimum 2+ years CBSE teaching experience"],
+      requirements: [],
       isActive: true
     });
     setIsModalOpen(true);
@@ -333,7 +232,7 @@ export default function CareerSettingsPage() {
                 <Input
                   value={hrConfig.hrEmail}
                   onChange={(e) => setHrConfig({ ...hrConfig, hrEmail: e.target.value })}
-                  placeholder="careers@sdmschool.in"
+                  placeholder="e.g. careers@school.edu"
                   className="h-9 rounded-xl text-xs"
                 />
               </div>
@@ -343,7 +242,7 @@ export default function CareerSettingsPage() {
                 <Input
                   value={hrConfig.walkinTimings}
                   onChange={(e) => setHrConfig({ ...hrConfig, walkinTimings: e.target.value })}
-                  placeholder="Mon – Sat (10:00 AM – 2:00 PM)"
+                  placeholder="e.g. Mon – Sat (10:00 AM – 2:00 PM)"
                   className="h-9 rounded-xl text-xs"
                 />
               </div>
@@ -371,7 +270,23 @@ export default function CareerSettingsPage() {
               </Button>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {jobs.map((job) => (
+              {jobs.length === 0 ? (
+                <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <Briefcase className="mx-auto h-8 w-8 text-slate-300 mb-2" />
+                  <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">No Job Openings Listed</p>
+                  <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                    Publish faculty, teaching, and administrative vacancies on the public portal.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={openAddModal}
+                    className="mt-4 h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold"
+                  >
+                    <Plus size={13} className="mr-1" /> Add Job Opening
+                  </Button>
+                </div>
+              ) : (
+                jobs.map((job) => (
                 <div
                   key={job.id}
                   className={`p-5 rounded-2xl border transition-all ${
@@ -433,7 +348,8 @@ export default function CareerSettingsPage() {
                     {job.description}
                   </p>
                 </div>
-              ))}
+              ))
+            )}
             </CardContent>
           </Card>
         </div>

@@ -3,6 +3,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
+import { APP_CONFIG } from "@/constants/config";
 
 interface TimetableBannerProps {
   selectedClass: string;
@@ -24,7 +25,7 @@ export function TimetableBanner({
           Class {selectedClass} – Section {selectedSection}
         </Badge>
         <span className="text-xs font-bold text-slate-700 tracking-wide uppercase">
-          RANI PUBLIC SCHOOL • Academic Session 2026–2027
+          {APP_CONFIG.institution.fullName} • Academic Session {APP_CONFIG.academic.currentSession}
         </span>
       </div>
 

@@ -2,7 +2,7 @@
 
 import client from "@/lib/client";
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import {
   BookOpen,
   Plus,

@@ -205,7 +205,7 @@ export default function HeroSettingsPage() {
                   <textarea
                     value={form.bannerSubtitle}
                     onChange={(e) => setForm({ ...form, bannerSubtitle: e.target.value })}
-                    placeholder="e.g. Welcome to Rani Public School, an institution committed to holistic student growth..."
+                    placeholder="e.g. Welcome to our campus, an institution committed to academic excellence and holistic student growth..."
                     rows={3}
                     className="w-full p-3.5 rounded-xl border border-slate-200 text-xs font-medium focus:border-blue-500 focus:outline-hidden transition-all"
                   />

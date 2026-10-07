@@ -18,7 +18,8 @@ import {
   Sparkles,
   RefreshCcw
 } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -248,7 +249,7 @@ export default function StaffTimetableEditor() {
         </div>
 
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-center border-collapse table-fixed min-w-[1100px]">
+          <table className="w-full text-center border-collapse table-fixed min-w-275">
             <thead>
               <tr className="bg-slate-50/50 border-b border-slate-200">
                 <th className="w-48 px-6 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[3px] text-left border-r border-slate-100 sticky left-0 z-20 bg-slate-50">Day Protocol</th>

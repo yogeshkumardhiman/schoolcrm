@@ -23,6 +23,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DocumentCropperModal } from "@/components/ui/DocumentCropperModal";
+import { APP_CONFIG } from "@/constants/config";
 import { WebsiteNavHeader } from "../components/WebsiteNavHeader";
 
 const PRESET_THEMES = [
@@ -307,7 +308,7 @@ export default function ThemeSettingsPage() {
                   <Input
                     value={form.schoolName}
                     onChange={(e) => setForm({ ...form, schoolName: e.target.value })}
-                    placeholder="e.g. RANI PUBLIC SCHOOL"
+                    placeholder="e.g. Greenfield Public School"
                     className="h-11 rounded-xl font-bold text-sm"
                   />
                 </div>
@@ -317,7 +318,7 @@ export default function ThemeSettingsPage() {
                   <Input
                     value={form.domainPrefix}
                     onChange={(e) => setForm({ ...form, domainPrefix: e.target.value })}
-                    placeholder="e.g. rani.sdmschool.in"
+                    placeholder="e.g. portal.schoolname.edu"
                     className="h-11 rounded-xl text-xs font-mono"
                   />
                 </div>
@@ -419,8 +420,8 @@ export default function ThemeSettingsPage() {
             </div>
 
             <div className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: form.primaryColor }}>
-              <p className="text-xs font-black truncate">{form.schoolName || "RANI PUBLIC SCHOOL"}</p>
-              <p className="text-[10px] opacity-80 truncate mt-0.5">{form.tagline || "CBSE Affiliated Senior Secondary Institution"}</p>
+              <p className="text-xs font-black truncate">{form.schoolName || APP_CONFIG.institution.fullName}</p>
+              <p className="text-[10px] opacity-80 truncate mt-0.5">{form.tagline || APP_CONFIG.institution.motto || "Excellence in Education"}</p>
               <div className="mt-3 flex items-center gap-2">
                 <span className="px-2.5 py-1 rounded-lg text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: form.secondaryColor }}>
                   Explore

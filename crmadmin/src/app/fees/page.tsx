@@ -2,7 +2,7 @@
 
 import client from "@/lib/client";
 import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import {
   Search,
   Wallet,

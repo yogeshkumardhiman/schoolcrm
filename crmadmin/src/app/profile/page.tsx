@@ -16,8 +16,13 @@ import { cn } from "@/lib/utils";
 import { APP_CONFIG } from "@/constants/config";
 
 export default function ProfilePage() {
+    const [mounted, setMounted] = useState(false);
     const { user, loading: authLoading } = useAuth();
     const isSystemAdmin = user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'SUPER_ADMIN';
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Query: Teacher/Staff Full Profile
     const { data: profile = {}, isLoading: dataLoading } = useQuery({
@@ -50,7 +55,7 @@ export default function ProfilePage() {
         }
     });
 
-    const loading = authLoading || dataLoading;
+    const loading = !mounted || authLoading || dataLoading;
 
     if (loading) {
         return (

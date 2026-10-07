@@ -41,52 +41,6 @@ interface SchoolRule {
   ruleDesc: string;
 }
 
-const DEFAULT_PILLARS: Pillar[] = [
-  { id: "1", title: "CBSE Academic Distinction", desc: "Rigorous pedagogical framework fostering conceptual mastery and continuous assessment.", icon: "GraduationCap" },
-  { id: "2", title: "STEM, AI & Robotics Labs", desc: "Hands-on engineering, coding, Python, and experiential innovation modules.", icon: "Laptop" },
-  { id: "3", title: "Multi-Sport Athletics Arena", desc: "Expansive green grounds with certified coaches for Football, Cricket, and Athletics.", icon: "Trophy" },
-  { id: "4", title: "Safe & Nurturing Campus", desc: "24/7 CCTV surveillance, GPS-equipped bus fleet, and compassionate faculty mentorship.", icon: "ShieldCheck" }
-];
-
-const DEFAULT_RULES: SchoolRule[] = [
-  {
-    id: "1",
-    category: "Academic Attendance",
-    title: "75% Mandatory CBSE Attendance Policy",
-    ruleDesc: "Scholars must maintain a minimum of 75% attendance throughout the academic session to be eligible for CBSE Term & Board examinations. Leave applications must be submitted in advance."
-  },
-  {
-    id: "2",
-    category: "Campus Uniform & Grooming",
-    title: "Prescribed School Uniform & Punctuality",
-    ruleDesc: "Every student is required to attend campus in neat, prescribed school uniform with ID cards. Morning assembly gates close promptly at 07:45 AM (Summer) / 08:15 AM (Winter)."
-  },
-  {
-    id: "3",
-    category: "Safety & Well-being",
-    title: "Zero Tolerance to Bullying, Ragging & Disrespect",
-    ruleDesc: "Strict compliance with POCSO guidelines and CBSE safety norms. Any form of harassment, verbal abuse, or indiscipline will invite immediate Disciplinary Committee review."
-  },
-  {
-    id: "4",
-    category: "Digital Technology",
-    title: "Electronic Gadgets & Mobile Phone Prohibition",
-    ruleDesc: "Students are strictly prohibited from carrying mobile phones, smartwatches, or personal digital electronics to school without prior written authorization from the Principal."
-  },
-  {
-    id: "5",
-    category: "Academic Resources",
-    title: "Laboratories & Library Care Protocol",
-    ruleDesc: "Lab apparatus, computers, and library volumes must be handled with utmost diligence and care. Any intentional damage or loss will be borne by the guardian."
-  },
-  {
-    id: "6",
-    category: "Parent Partnership",
-    title: "Parent-Teacher Meetings & Campus Entry",
-    ruleDesc: "Parents are warmly encouraged to attend all scheduled PTMs. For weekdays, prior appointment with the Administrative Reception is mandatory before visiting faculty."
-  }
-];
-
 export default function AboutSettingsPage() {
   const queryClient = useQueryClient();
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -99,8 +53,8 @@ export default function AboutSettingsPage() {
     principalName: "",
     principalMessage: "",
     principalImage: "",
-    whyChooseUs: DEFAULT_PILLARS,
-    schoolRules: DEFAULT_RULES
+    whyChooseUs: [] as Pillar[],
+    schoolRules: [] as SchoolRule[]
   });
 
   const { data, isLoading } = useQuery({
@@ -123,10 +77,10 @@ export default function AboutSettingsPage() {
         principalImage: data.principalImage || data.about_config?.principalImage || "",
         whyChooseUs: Array.isArray(data.whyChooseUs) && data.whyChooseUs.length > 0
           ? data.whyChooseUs
-          : (Array.isArray(data.about_config?.whyChooseUs) && data.about_config.whyChooseUs.length > 0 ? data.about_config.whyChooseUs : DEFAULT_PILLARS),
+          : (Array.isArray(data.about_config?.whyChooseUs) ? data.about_config.whyChooseUs : []),
         schoolRules: Array.isArray(data.about_config?.schoolRules) && data.about_config.schoolRules.length > 0
           ? data.about_config.schoolRules
-          : DEFAULT_RULES
+          : (Array.isArray(data.schoolRules) ? data.schoolRules : [])
       });
     }
   }, [data]);
@@ -194,7 +148,7 @@ export default function AboutSettingsPage() {
       ...prev,
       whyChooseUs: [
         ...prev.whyChooseUs,
-        { id: Date.now().toString(), title: "New Distinction Pillar", desc: "Describe the educational or campus benefit.", icon: "Sparkles" }
+        { id: Date.now().toString(), title: "", desc: "", icon: "Sparkles" }
       ]
     }));
   };
@@ -217,9 +171,9 @@ export default function AboutSettingsPage() {
         ...prev.schoolRules,
         {
           id: Date.now().toString(),
-          category: "General Conduct",
-          title: "New School Regulation",
-          ruleDesc: "Specify standard campus guidelines and disciplinary expectations for scholars."
+          category: "",
+          title: "",
+          ruleDesc: ""
         }
       ]
     }));
@@ -435,44 +389,61 @@ export default function AboutSettingsPage() {
               </Button>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {form.schoolRules.map((rule, rIdx) => (
-                <div
-                  key={rule.id || rIdx}
-                  className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white transition-all space-y-2 relative group"
-                >
-                  <div className="flex items-center justify-between">
-                    <Input
-                      value={rule.category}
-                      onChange={(e) => updateRule(rIdx, "category", e.target.value)}
-                      placeholder="Category (e.g. Attendance)"
-                      className="h-7 w-48 text-[10px] font-black uppercase text-blue-600 bg-blue-50 border-blue-200 rounded-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeRule(rIdx)}
-                      className="text-slate-400 hover:text-rose-600 p-1"
-                      title="Delete Rule"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-
-                  <Input
-                    value={rule.title}
-                    onChange={(e) => updateRule(rIdx, "title", e.target.value)}
-                    placeholder="Rule Title"
-                    className="h-8 rounded-lg font-bold text-xs bg-white"
-                  />
-
-                  <textarea
-                    value={rule.ruleDesc}
-                    onChange={(e) => updateRule(rIdx, "ruleDesc", e.target.value)}
-                    placeholder="Rule detailed instructions..."
-                    rows={2}
-                    className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium bg-white"
-                  />
+              {form.schoolRules.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <Scale className="h-8 w-8 text-slate-300 mb-2" />
+                  <h4 className="text-xs font-bold text-slate-700">No School Rules Configured</h4>
+                  <p className="text-[11px] text-slate-400 max-w-xs mt-0.5 mb-3">
+                    Add code of conduct guidelines, attendance policies, or campus regulations.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={addRule}
+                    className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus size={12} /> Add First Rule
+                  </Button>
                 </div>
-              ))}
+              ) : (
+                form.schoolRules.map((rule, rIdx) => (
+                  <div
+                    key={rule.id || rIdx}
+                    className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white transition-all space-y-2 relative group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Input
+                        value={rule.category}
+                        onChange={(e) => updateRule(rIdx, "category", e.target.value)}
+                        placeholder="Category (e.g. Attendance)"
+                        className="h-7 w-48 text-[10px] font-black uppercase text-blue-600 bg-blue-50 border-blue-200 rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeRule(rIdx)}
+                        className="text-slate-400 hover:text-rose-600 p-1"
+                        title="Delete Rule"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+
+                    <Input
+                      value={rule.title}
+                      onChange={(e) => updateRule(rIdx, "title", e.target.value)}
+                      placeholder="Rule Title"
+                      className="h-8 rounded-lg font-bold text-xs bg-white"
+                    />
+
+                    <textarea
+                      value={rule.ruleDesc}
+                      onChange={(e) => updateRule(rIdx, "ruleDesc", e.target.value)}
+                      placeholder="Rule detailed instructions..."
+                      rows={2}
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium bg-white"
+                    />
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
 
@@ -494,36 +465,53 @@ export default function AboutSettingsPage() {
               </Button>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {form.whyChooseUs.map((pillar, idx) => (
-                <div
-                  key={pillar.id || idx}
-                  className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/40 space-y-2 relative group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 font-mono">Pillar 0{idx + 1}</span>
-                    <button
-                      type="button"
-                      onClick={() => removePillar(idx)}
-                      className="text-slate-400 hover:text-rose-600 p-1"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                  <Input
-                    value={pillar.title}
-                    onChange={(e) => updatePillar(idx, "title", e.target.value)}
-                    placeholder="Title"
-                    className="h-8 rounded-lg font-bold text-xs bg-white"
-                  />
-                  <textarea
-                    value={pillar.desc}
-                    onChange={(e) => updatePillar(idx, "desc", e.target.value)}
-                    placeholder="Description"
-                    rows={2}
-                    className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium bg-white"
-                  />
+              {form.whyChooseUs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <Award className="h-8 w-8 text-slate-300 mb-2" />
+                  <h4 className="text-xs font-bold text-slate-700">No Distinction Pillars Configured</h4>
+                  <p className="text-[11px] text-slate-400 max-w-xs mt-0.5 mb-3">
+                    Highlight your institution's core pillars (e.g. CBSE Academic Distinction, STEM Labs, Sports, Safety).
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={addPillar}
+                    className="h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus size={12} /> Add First Pillar
+                  </Button>
                 </div>
-              ))}
+              ) : (
+                form.whyChooseUs.map((pillar, idx) => (
+                  <div
+                    key={pillar.id || idx}
+                    className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/40 space-y-2 relative group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-400 font-mono">Pillar 0{idx + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => removePillar(idx)}
+                        className="text-slate-400 hover:text-rose-600 p-1"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                    <Input
+                      value={pillar.title}
+                      onChange={(e) => updatePillar(idx, "title", e.target.value)}
+                      placeholder="Title"
+                      className="h-8 rounded-lg font-bold text-xs bg-white"
+                    />
+                    <textarea
+                      value={pillar.desc}
+                      onChange={(e) => updatePillar(idx, "desc", e.target.value)}
+                      placeholder="Description"
+                      rows={2}
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium bg-white"
+                    />
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

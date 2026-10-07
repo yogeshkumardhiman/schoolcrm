@@ -12,9 +12,8 @@ import {
   Users,
   Check
 } from "lucide-react";
-import { APP_CONFIG } from "@/constants/config";
-import { usePathname, useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { usePathname } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "@/lib/client";
 import { useAuth } from "@/components/AbilityProvider";
@@ -153,7 +152,7 @@ export function Header() {
              <div className="flex flex-col">
                 <input 
                    type="date"
-                   value={format(currentDate, "yyyy-MM-dd")}
+                   value={currentDate.toISOString().slice(0, 10)}
                    onChange={(e) => setCurrentDate(new Date(e.target.value))}
                    className="bg-transparent text-[11px] font-black text-slate-900 outline-none cursor-pointer font-heading"
                 />
@@ -193,7 +192,7 @@ export function Header() {
 
             {/* 🔽 Dropdown Panel */}
             {dropdownOpen && (
-              <div className="absolute right-0 top-14 w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[100] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+              <div className="absolute right-0 top-14 w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 z-100 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50 bg-slate-950">
                   <div className="flex items-center gap-2">
@@ -244,7 +243,7 @@ export function Header() {
                 )}
 
                 {/* Notice List */}
-                <div className="divide-y divide-slate-50 max-h-[380px] overflow-y-auto">
+                <div className="divide-y divide-slate-50 max-h-95 overflow-y-auto">
                   {recentNotices.length === 0 && mySubs.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-300">
                       <div className="h-14 w-14 bg-slate-50 rounded-full flex items-center justify-center">

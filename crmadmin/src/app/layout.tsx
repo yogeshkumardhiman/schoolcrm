@@ -22,6 +22,7 @@ import { APP_CONFIG } from "@/constants/config";
 import { AbilityProvider } from "@/components/AbilityProvider";
 import QueryProvider from "@/components/QueryProvider";
 import { SessionProvider } from "@/contexts/SessionContext";
+import ProgressProvider from "@/components/providers/ProgressProvider";
 
 export const metadata: Metadata = {
   title: `${APP_CONFIG.institution.name} ${APP_CONFIG.institution.hubName} | School Management System`,
@@ -36,23 +37,25 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(outfit.variable, plusJakarta.variable)} suppressHydrationWarning>
       <body className={cn(plusJakarta.className, "bg-[#FBFBFC] text-slate-900 antialiased font-sans")} suppressHydrationWarning>
-        <QueryProvider>
-          <SessionProvider>
-            <AbilityProvider>
-              <Toaster position="top-center" />
-              <div className="flex min-h-screen relative">
-                <Sidebar />
-                {/* 🚀 Main Content Wrapper with Sidebar Offset */}
-                <div className="flex-1 flex flex-col min-h-screen  transition-all duration-300">
-                <Header />
-                <main className="flex-1 overflow-y-auto no-scrollbar">
-                  {children}
-                </main>
+        <ProgressProvider>
+          <QueryProvider>
+            <SessionProvider>
+              <AbilityProvider>
+                <Toaster position="top-center" />
+                <div className="flex min-h-screen relative">
+                  <Sidebar />
+                  {/* 🚀 Main Content Wrapper with Sidebar Offset */}
+                  <div className="flex-1 flex flex-col min-h-screen  transition-all duration-300">
+                  <Header />
+                  <main className="flex-1 overflow-y-auto no-scrollbar">
+                    {children}
+                  </main>
+                </div>
               </div>
-            </div>
-          </AbilityProvider>
-          </SessionProvider>
-        </QueryProvider>
+            </AbilityProvider>
+            </SessionProvider>
+          </QueryProvider>
+        </ProgressProvider>
       </body>
     </html>
   );

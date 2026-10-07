@@ -32,7 +32,6 @@ import {
    TableHeader,
    TableRow,
 } from "@/components/ui/table";
-import { format, isToday, isYesterday } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { APP_CONFIG } from "@/constants/config";
 import toast from "react-hot-toast";
@@ -244,7 +243,7 @@ export default function NotificationsPage() {
                </div>
             </div>
 
-            <div className="min-h-[400px]">
+            <div className="min-h-100">
                {isLoading ? (
                   <div className="p-10 space-y-4">
                      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
@@ -262,14 +261,14 @@ export default function NotificationsPage() {
                      </div>
                   </div>
                ) : (
-                  <Table className="min-w-[1000px]">
+                  <Table className="min-w-250">
                      <TableHeader className="bg-slate-50/50 border-b border-slate-200">
                         <TableRow className="hover:bg-transparent border-none">
-                           <TableHead className="w-[320px] px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px] text-black">Notice</TableHead>
-                           <TableHead className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px] text-black">Target</TableHead>
-                           <TableHead className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px] text-black">Sent By</TableHead>
-                           <TableHead className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px] text-black">Date</TableHead>
-                           <TableHead className="text-right px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px] text-black">Actions</TableHead>
+                           <TableHead className="w-[320px] px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px]">Notice</TableHead>
+                           <TableHead className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px]">Target</TableHead>
+                           <TableHead className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px]">Sent By</TableHead>
+                           <TableHead className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px]">Date</TableHead>
+                           <TableHead className="text-right px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[4px]">Actions</TableHead>
                         </TableRow>
                      </TableHeader>
                      <TableBody>
@@ -288,7 +287,7 @@ export default function NotificationsPage() {
                                        <div className={`h-9 w-9 rounded-xl ${creatorConf.color} flex items-center justify-center text-white shadow-sm shrink-0`}>
                                           <Bell size={14} strokeWidth={2.5} />
                                        </div>
-                                       <div className="max-w-[240px] space-y-1">
+                                       <div className="max-w-60 space-y-1">
                                           <p className="font-black text-slate-900 text-[11px] tracking-tight leading-none  uppercase">{notif.title}</p>
                                           <p className="text-[10px] text-slate-500 font-medium truncate leading-relaxed">{notif.content || notif.message}</p>
                                        </div>

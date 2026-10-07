@@ -527,7 +527,7 @@ export default function StaffAttendancePage() {
               Staff Attendance Portal
             </h3>
             <p className="text-xs text-slate-500 text-center mb-6 font-medium">
-              Open your SDM School App and scan this code to log attendance.
+              Open your School App and scan this code to log attendance.
             </p>
 
             <div className="h-64 w-64 border-2 border-dashed border-indigo-400 rounded-2xl flex items-center justify-center p-4 bg-slate-50">

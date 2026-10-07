@@ -17,7 +17,7 @@ import { useAuth } from "@/components/AbilityProvider";
 import { useSessionContext } from "@/contexts/SessionContext";
 import { useQuery } from "@tanstack/react-query";
 import client from "@/lib/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 
 // 💎 PREMIUM METRIC CARD
 function MetricCard({ title, value, subValue, icon: Icon, loading, trend, colorClass, isPositive = true }: any) {
@@ -61,7 +61,7 @@ function AdminDecisionDashboard({ stats, loading, chartView, setChartView }: { s
                 <MetricCard
                     title="Total Scholars"
                     value={stats.totalStudents || 0}
-                    subValue={stats.attendancePercentage ? `Today's Attendance: ${stats.attendancePercentage}%` : "Live Enrollment"}
+                    subValue={stats.attendancePercentage != null ? `Today's Attendance: ${stats.attendancePercentage}%` : "Attendance Not Marked"}
                     icon={Users}
                     loading={loading}
                     colorClass="bg-orange-500 shadow-orange-200"
@@ -69,7 +69,7 @@ function AdminDecisionDashboard({ stats, loading, chartView, setChartView }: { s
                 <MetricCard
                     title="Total Faculty"
                     value={stats.totalTeachers || 0}
-                    subValue={Number(stats.staffAttendancePercentage) > 0 ? `Faculty Presence: ${stats.staffAttendancePercentage}%` : "Faculty Registry"}
+                    subValue={stats.staffAttendancePercentage != null ? `Faculty Presence: ${stats.staffAttendancePercentage}%` : "Attendance Not Marked"}
                     icon={GraduationCap}
                     loading={loading}
                     colorClass="bg-emerald-500 shadow-emerald-200"
@@ -214,7 +214,7 @@ function PrincipalDashboard({ stats, loading }: { stats: any, loading: boolean }
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <MetricCard
                     title="Faculty Present Today"
-                    value={`${stats.staffAttendancePercentage || '95.2'}%`}
+                    value={stats.staffAttendancePercentage != null && stats.staffAttendancePercentage !== '' ? `${stats.staffAttendancePercentage}%` : (Number(stats.totalTeachers) > 0 ? 'Not Marked' : '—')}
                     subValue={`${stats.totalTeachers || 0} Total Registered Faculty`}
                     icon={GraduationCap}
                     loading={loading}
@@ -222,7 +222,7 @@ function PrincipalDashboard({ stats, loading }: { stats: any, loading: boolean }
                 />
                 <MetricCard
                     title="Scholars Presence"
-                    value={`${stats.attendancePercentage || '94.8'}%`}
+                    value={stats.attendancePercentage != null && stats.attendancePercentage !== '' ? `${stats.attendancePercentage}%` : (Number(stats.totalStudents) > 0 ? 'Not Marked' : '—')}
                     subValue={`${stats.totalStudents || 0} Active Enrolled Students`}
                     icon={Users}
                     loading={loading}
@@ -742,8 +742,8 @@ function SubjectTeacherDashboard({ user, stats, loading }: { user: any, stats: a
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <MetricCard
                     title="My Attendance Pulse"
-                    value={stats.personalStats?.attendance ? `${stats.personalStats.attendance}%` : "100%"}
-                    subValue={`${stats.personalStats?.presentDays || 22} Days Logged Present`}
+                    value={stats.personalStats?.attendance != null ? `${stats.personalStats.attendance}%` : "—"}
+                    subValue={stats.personalStats?.presentDays != null ? `${stats.personalStats.presentDays} Days Logged Present` : "Personal Attendance Log"}
                     icon={Activity}
                     loading={loading}
                     colorClass="bg-emerald-600 shadow-emerald-200"

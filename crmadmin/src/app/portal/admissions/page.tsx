@@ -26,16 +26,9 @@ interface AdmissionStep {
   badge?: string;
 }
 
-const DEFAULT_TIMELINE: AdmissionStep[] = [
-  { step: 1, title: "Online Registration & Enquiry", desc: "Fill the admission enquiry form online or visit the school admissions counter.", badge: "Step 01" },
-  { step: 2, title: "Campus Tour & Student Interaction", desc: "Interact with our faculty coordinators and explore our world-class campus facilities.", badge: "Step 02" },
-  { step: 3, title: "Document Verification & Formalities", desc: "Submit birth certificate, previous school report card, Aadhaar, and passport photos.", badge: "Step 03" },
-  { step: 4, title: "Fee Payment & Welcome Kit", desc: "Complete admission fee payment to confirm seat allotment and receive the school welcome pack.", badge: "Step 04" }
-];
-
 export default function AdmissionsSettingsPage() {
   const queryClient = useQueryClient();
-  const [timeline, setTimeline] = useState<AdmissionStep[]>(DEFAULT_TIMELINE);
+  const [timeline, setTimeline] = useState<AdmissionStep[]>([]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["school-info"],
@@ -47,10 +40,10 @@ export default function AdmissionsSettingsPage() {
 
   useEffect(() => {
     if (data) {
-      if (Array.isArray(data.admissionTimeline) && data.admissionTimeline.length > 0) {
+      if (Array.isArray(data.admissionTimeline)) {
         setTimeline(data.admissionTimeline);
       } else {
-        setTimeline(DEFAULT_TIMELINE);
+        setTimeline([]);
       }
     }
   }, [data]);
@@ -78,8 +71,8 @@ export default function AdmissionsSettingsPage() {
       ...prev,
       {
         step: prev.length + 1,
-        title: `Step ${prev.length + 1} Process`,
-        desc: "Describe what the parent or student needs to do in this stage.",
+        title: "",
+        desc: "",
         badge: `Step 0${prev.length + 1}`
       }
     ]);
@@ -107,7 +100,7 @@ export default function AdmissionsSettingsPage() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6 bg-slate-50/50 min-h-screen">
       <WebsiteNavHeader
-        title="4-Step Admissions Roadmap & Timeline"
+        title="Admissions Roadmap & Timeline"
         description="Configure the sequential admission journey guide and registration instructions for prospective parents."
         actionButton={
           <Button
@@ -134,55 +127,72 @@ export default function AdmissionsSettingsPage() {
           <Button
             type="button"
             onClick={addStep}
-            className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs"
+            className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
           >
             <Plus size={14} /> Add Stage
           </Button>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            {timeline.map((step, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:border-blue-300 hover:bg-white transition-all space-y-3 relative group"
+          {timeline.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+              <ClipboardList className="h-10 w-10 text-slate-300 mb-3" />
+              <h3 className="text-sm font-bold text-slate-700">No Admission Stages Configured</h3>
+              <p className="text-xs text-slate-400 max-w-sm mt-1 mb-4">
+                Configure your school's step-by-step admissions roadmap for prospective parents and students.
+              </p>
+              <Button
+                type="button"
+                onClick={addStep}
+                className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-md font-mono">
-                    {step.badge || `Stage 0${idx + 1}`}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeStep(idx)}
-                    className="text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors"
-                    title="Delete Stage"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
+                <Plus size={14} /> Add First Stage
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {timeline.map((step, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:border-blue-300 hover:bg-white transition-all space-y-3 relative group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-md font-mono">
+                      {step.badge || `Stage 0${idx + 1}`}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeStep(idx)}
+                      className="text-slate-400 hover:text-rose-600 p-1 rounded-md transition-colors cursor-pointer"
+                      title="Delete Stage"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
 
-                <div>
-                  <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Stage Headline</label>
-                  <Input
-                    value={step.title}
-                    onChange={(e) => updateStep(idx, "title", e.target.value)}
-                    placeholder="e.g. Online Registration"
-                    className="h-9 rounded-xl font-bold text-xs bg-white"
-                  />
-                </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Stage Headline</label>
+                    <Input
+                      value={step.title}
+                      onChange={(e) => updateStep(idx, "title", e.target.value)}
+                      placeholder="e.g. Online Registration"
+                      className="h-9 rounded-xl font-bold text-xs bg-white"
+                    />
+                  </div>
 
-                <div>
-                  <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Stage Action Details</label>
-                  <textarea
-                    value={step.desc}
-                    onChange={(e) => updateStep(idx, "desc", e.target.value)}
-                    placeholder="Detailed explanation of required steps..."
-                    rows={3}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium bg-white focus:border-blue-500 focus:outline-hidden transition-all"
-                  />
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Stage Action Details</label>
+                    <textarea
+                      value={step.desc}
+                      onChange={(e) => updateStep(idx, "desc", e.target.value)}
+                      placeholder="Detailed explanation of required steps..."
+                      rows={3}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium bg-white focus:border-blue-500 focus:outline-hidden transition-all"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

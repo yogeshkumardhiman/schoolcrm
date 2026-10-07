@@ -163,7 +163,7 @@ export const BannerSlidersTab: React.FC<BannerSlidersTabProps> = ({
                                         value={bannerForm.title}
                                         onChange={e => setBannerForm({...bannerForm, title: e.target.value})}
                                         className="h-11 rounded-lg text-sm font-bold uppercase"
-                                        placeholder="e.g. WELCOME TO SDM SCHOOL"
+                                        placeholder="e.g. WELCOME TO OUR CAMPUS"
                                     />
                                 </div>
                                 <div className="space-y-1.5 col-span-2">

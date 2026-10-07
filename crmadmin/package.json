@@ -3,15 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "cp ../school-config.json school-config.json || true",
-    "prebuild": "cp ../school-config.json school-config.json || true",
-    "dev": "next dev --webpack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
+    "@bprogress/next": "^3.2.12",
     "@hookform/resolvers": "^5.9.1",
     "@tanstack/react-query": "^5.100.9",
     "apexcharts": "^5.10.5",

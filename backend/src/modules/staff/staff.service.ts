@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, ILike } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -946,5 +946,91 @@ export class StaffService {
       throw new NotFoundException(`Staff profile for User ID ${userId} not found`);
     }
     return this.update(staff.id, payload);
+  }
+
+  /**
+   * Reset faculty member's password and dispatch updated credentials to their registered email
+   */
+  async resetPasswordAndNotify(id: number, customPassword?: string) {
+    const staff = await this.staffRepository.findOne({ where: { id } });
+    if (!staff) {
+      throw new NotFoundException(`Faculty member with ID #${id} not found.`);
+    }
+
+    if (!staff.email || !staff.email.trim()) {
+      throw new BadRequestException(
+        `Faculty member "${staff.name || 'Staff'}" does not have a registered email address. Please update their email first.`,
+      );
+    }
+
+    // 1. Generate or use specified temporary password
+    const plainPassword =
+      customPassword && customPassword.trim().length >= 6
+        ? customPassword.trim()
+        : `Sdm@${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const hashedPassword = bcrypt.hashSync(plainPassword, 10);
+
+    // 2. Update staff entity
+    staff.password = hashedPassword;
+    await this.staffRepository.save(staff);
+
+    // 3. Update or sync corresponding UserEntity
+    if (staff.userId) {
+      await this.userRepository.update(staff.userId, { password: hashedPassword });
+    } else {
+      const existingUser = await this.userRepository.findOne({
+        where: [
+          ...(staff.loginId ? [{ loginId: staff.loginId }] : []),
+          { email: staff.email },
+        ],
+      });
+      if (existingUser) {
+        existingUser.password = hashedPassword;
+        staff.userId = existingUser.id;
+        await this.staffRepository.save(staff);
+        await this.userRepository.save(existingUser);
+      } else {
+        const newUser = this.userRepository.create({
+          loginId: staff.loginId || staff.email,
+          email: staff.email,
+          password: hashedPassword,
+          userType: UserType.STAFF,
+          isActive: true,
+        });
+        const savedUser = await this.userRepository.save(newUser);
+        staff.userId = savedUser.id;
+        await this.staffRepository.save(staff);
+      }
+    }
+
+    // 4. Send email dispatch
+    let emailSent = false;
+    try {
+      emailSent = await this.mailService.sendFacultyCredentials({
+        to: staff.email,
+        name: staff.name || 'Faculty Member',
+        loginId: staff.loginId || staff.email,
+        password: plainPassword,
+        role: staff.role || 'TEACHER',
+        designation: staff.designation,
+        isPasswordReset: true,
+      });
+    } catch (err) {
+      console.error('Password reset email dispatch error:', err);
+      emailSent = false;
+    }
+
+    return {
+      success: true,
+      message: emailSent
+        ? `Password reset successfully. Login credentials sent to ${staff.email}.`
+        : `Password reset successfully, but email dispatch failed. Please check SMTP settings. Temporary password: ${plainPassword}`,
+      emailSent,
+      temporaryPassword: plainPassword,
+      loginId: staff.loginId || staff.email,
+      email: staff.email,
+      staffName: staff.name,
+    };
   }
 }

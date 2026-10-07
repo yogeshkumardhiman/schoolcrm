@@ -2,7 +2,7 @@
 
 import client from "@/lib/client";
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import {
   Search,
   Printer,
@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/AbilityProvider";
+import { APP_CONFIG } from "@/constants/config";
 
 const ALL_CLASSES = [
   "NURSERY", "LKG", "UKG", "1ST", "2ND", "3RD", "4TH", "5TH",
@@ -404,7 +405,7 @@ export default function StudentIDCardStudio() {
                     <div className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-800 p-4 text-center text-white space-y-1 relative">
                       <div className="absolute top-2 right-3 h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
                       <h3 className="font-black text-sm uppercase tracking-tight leading-tight">
-                        {schoolInfo?.schoolName || "SDM PUBLIC SCHOOL"}
+                        {schoolInfo?.schoolName || APP_CONFIG.institution.fullName}
                       </h3>
                       <p className="text-[9px] uppercase tracking-widest text-indigo-200 font-bold">
                         {schoolInfo?.affiliation || "Affiliated to CBSE, New Delhi"}
@@ -573,7 +574,7 @@ export default function StudentIDCardStudio() {
                     {/* Header */}
                     <div className="bg-indigo-700 p-2 text-center text-white">
                       <h5 className="font-black text-[10px] uppercase truncate">
-                        {schoolInfo?.schoolName || "SDM PUBLIC SCHOOL"}
+                        {schoolInfo?.schoolName || APP_CONFIG.institution.fullName}
                       </h5>
                       <span className="text-[7px] text-indigo-200 uppercase tracking-widest font-bold">
                         Student ID Card

@@ -281,6 +281,15 @@ export class StaffController {
     return this.staffService.update(id, dto);
   }
 
+  @Post(':id/reset-password')
+  @RequirePermissions(Permission.STAFF_UPDATE)
+  async resetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('password') password?: string,
+  ) {
+    return this.staffService.resetPasswordAndNotify(id, password);
+  }
+
   @Delete(':id')
   @RequirePermissions(Permission.STAFF_DELETE)
   async remove(@Param('id', ParseIntPipe) id: number) {

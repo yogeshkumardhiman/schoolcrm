@@ -31,40 +31,9 @@ interface Facility {
   icon?: string;
 }
 
-const DEFAULT_FACILITIES: Facility[] = [
-  {
-    id: "1",
-    title: "Computer Lab",
-    desc: "High-speed modern PCs running latest education suites.",
-    tag: "Digital Tech",
-    image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800"
-  },
-  {
-    id: "2",
-    title: "Science Labs",
-    desc: "Dedicated workspaces for practical chemistry and physics experimentation.",
-    tag: "Innovation",
-    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800"
-  },
-  {
-    id: "3",
-    title: "Sports Arenas",
-    desc: "Spacious fields for football, basketball, and fitness activities.",
-    tag: "Athletics",
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800"
-  },
-  {
-    id: "4",
-    title: "Robotics Lab",
-    desc: "Practical workspace for coding, drone assembly, and robotic logic.",
-    tag: "AI & Tech",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800"
-  }
-];
-
 export default function FacilitiesSettingsPage() {
   const queryClient = useQueryClient();
-  const [facilities, setFacilities] = useState<Facility[]>(DEFAULT_FACILITIES);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
 
   const { data, isLoading } = useQuery({
@@ -82,7 +51,7 @@ export default function FacilitiesSettingsPage() {
       } else if (Array.isArray(data.facilities_config) && data.facilities_config.length > 0) {
         setFacilities(data.facilities_config);
       } else {
-        setFacilities(DEFAULT_FACILITIES);
+        setFacilities([]);
       }
     }
   }, [data]);
@@ -113,10 +82,10 @@ export default function FacilitiesSettingsPage() {
       ...prev,
       {
         id: Date.now().toString(),
-        title: "New Campus Facility",
-        desc: "Describe infrastructure highlights and student amenities.",
-        tag: "Campus",
-        image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800"
+        title: "",
+        desc: "",
+        tag: "",
+        image: ""
       }
     ]);
   };
@@ -200,97 +169,114 @@ export default function FacilitiesSettingsPage() {
           </Button>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {facilities.map((fac, idx) => (
-              <div
-                key={fac.id || idx}
-                className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-md transition-all space-y-4 relative group flex flex-col justify-between"
+          {facilities.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+              <Building2 className="h-10 w-10 text-slate-300 mb-3" />
+              <h3 className="text-sm font-bold text-slate-700">No Campus Facilities Configured</h3>
+              <p className="text-xs text-slate-400 max-w-sm mt-1 mb-4">
+                Add laboratories, sports arenas, libraries, or digital classrooms to showcase on your public website.
+              </p>
+              <Button
+                type="button"
+                onClick={addFacility}
+                className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest font-mono bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
-                      Facility #{idx + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeFacility(idx)}
-                      className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
-                      title="Delete Facility"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
+                <Plus size={14} /> Add First Facility
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {facilities.map((fac, idx) => (
+                <div
+                  key={fac.id || idx}
+                  className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-md transition-all space-y-4 relative group flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest font-mono bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                        Facility #{idx + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeFacility(idx)}
+                        className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Delete Facility"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
 
-                  {/* Image Preview & Upload */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase text-slate-500 block">Facility Photo</label>
-                    <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group/img">
-                      {fac.image ? (
-                        <img
-                          src={fac.image}
-                          alt={fac.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1">
-                          <ImageIcon size={24} />
-                          <span className="text-[10px] font-bold">No Image Uploaded</span>
-                        </div>
-                      )}
-
-                      <label className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs font-bold gap-1 cursor-pointer">
-                        {uploadingIdx === idx ? (
-                          <Loader2 size={20} className="animate-spin" />
+                    {/* Image Preview & Upload */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase text-slate-500 block">Facility Photo</label>
+                      <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group/img">
+                        {fac.image ? (
+                          <img
+                            src={fac.image}
+                            alt={fac.title}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <>
-                            <Camera size={20} />
-                            <span>Change Photo</span>
-                          </>
+                          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1">
+                            <ImageIcon size={24} />
+                            <span className="text-[10px] font-bold">No Image Uploaded</span>
+                          </div>
                         )}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleImageUpload(idx, e)}
-                        />
-                      </label>
+
+                        <label className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs font-bold gap-1 cursor-pointer">
+                          {uploadingIdx === idx ? (
+                            <Loader2 size={20} className="animate-spin" />
+                          ) : (
+                            <>
+                              <Camera size={20} />
+                              <span>Change Photo</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(idx, e)}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Facility Title</label>
+                      <Input
+                        value={fac.title}
+                        onChange={(e) => updateFacility(idx, "title", e.target.value)}
+                        placeholder="e.g. Computer Lab, Sports Arenas"
+                        className="h-10 rounded-xl font-bold text-xs bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Category Tag</label>
+                      <Input
+                        value={fac.tag || ""}
+                        onChange={(e) => updateFacility(idx, "tag", e.target.value)}
+                        placeholder="e.g. Digital Tech, Sports, Innovation"
+                        className="h-10 rounded-xl text-xs bg-white font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Description</label>
+                      <textarea
+                        value={fac.desc}
+                        onChange={(e) => updateFacility(idx, "desc", e.target.value)}
+                        placeholder="Describe infrastructure and student benefits..."
+                        rows={3}
+                        className="w-full p-3 rounded-xl border border-slate-200 text-xs font-medium bg-white focus:border-blue-500 focus:outline-hidden transition-all resize-none"
+                      />
                     </div>
                   </div>
-
-                  <div>
-                    <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Facility Title</label>
-                    <Input
-                      value={fac.title}
-                      onChange={(e) => updateFacility(idx, "title", e.target.value)}
-                      placeholder="e.g. Computer Lab, Sports Arenas"
-                      className="h-10 rounded-xl font-bold text-xs bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Category Tag</label>
-                    <Input
-                      value={fac.tag || ""}
-                      onChange={(e) => updateFacility(idx, "tag", e.target.value)}
-                      placeholder="e.g. Digital Tech, Sports, Innovation"
-                      className="h-10 rounded-xl text-xs bg-white font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-black uppercase text-slate-500 mb-1 block">Description</label>
-                    <textarea
-                      value={fac.desc}
-                      onChange={(e) => updateFacility(idx, "desc", e.target.value)}
-                      placeholder="Describe infrastructure and student benefits..."
-                      rows={3}
-                      className="w-full p-3 rounded-xl border border-slate-200 text-xs font-medium bg-white focus:border-blue-500 focus:outline-hidden transition-all resize-none"
-                    />
-                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

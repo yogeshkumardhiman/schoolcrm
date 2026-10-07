@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge";
 
 import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 
 const months = [
   "January", "February", "March", "April", "May", "June", 

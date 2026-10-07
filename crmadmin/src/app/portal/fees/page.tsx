@@ -50,93 +50,23 @@ interface TransportRoute {
   vehicleType: string;
 }
 
-const DEFAULT_FEE_TIERS: FeeTier[] = [
-  {
-    id: 1,
-    wing: "Pre-Primary Wing",
-    classes: "Nursery, LKG & UKG",
-    quarterlyFee: "₹5,400",
-    monthlyEquiv: "₹1,800 / month",
-    highlights: ["Activity & Phonics Kit", "Smart Kindergarten Lab", "Indoor Play Arena", "Term Assessments Included"]
-  },
-  {
-    id: 2,
-    wing: "Primary Wing",
-    classes: "Classes I to V",
-    quarterlyFee: "₹6,600",
-    monthlyEquiv: "₹2,200 / month",
-    highlights: ["Experiential STEM Labs", "Junior Computer Labs", "Co-Curricular Clubs", "Library & Sports Access"]
-  },
-  {
-    id: 3,
-    wing: "Middle & Secondary",
-    classes: "Classes VI to X",
-    quarterlyFee: "₹8,400",
-    monthlyEquiv: "₹2,800 / month",
-    highlights: ["Science Composite Labs", "Python AI Robotics", "CBSE Registration Support", "Inter-School Sports Coaching"]
-  },
-  {
-    id: 4,
-    wing: "Senior Secondary",
-    classes: "Classes XI & XII (All Streams)",
-    quarterlyFee: "₹10,500",
-    monthlyEquiv: "₹3,500 / month",
-    highlights: ["Specialized PCB/PCM Labs", "Commerce & Computer Science", "Pre-Board Assessments", "Competitive Entrance Guidance"]
-  }
-];
-
-const DEFAULT_TRANSPORT_ROUTES: TransportRoute[] = [
-  {
-    id: 1,
-    routeName: "Route A — Local City Limits",
-    distanceSlab: "0 – 5 km",
-    monthlyFee: "₹800 / month",
-    pickupPoints: "Civil Lines, Main Chowk, Station Road, Collectorate Colony",
-    vehicleType: "Air-Cooled CCTV Bus"
-  },
-  {
-    id: 2,
-    routeName: "Route B — Nangli Pathwari & Mubarakpur",
-    distanceSlab: "5 – 10 km",
-    monthlyFee: "₹1,200 / month",
-    pickupPoints: "Nangli Main Gate, Mubarakpur Navada, Sugar Mill Square",
-    vehicleType: "GPS Monitored Mini-Bus"
-  },
-  {
-    id: 3,
-    routeName: "Route C — Noorpur & Kotwali Sector",
-    distanceSlab: "10 – 15 km",
-    monthlyFee: "₹1,500 / month",
-    pickupPoints: "Noorpur Highway Crossing, Kotwali Village, Police Post",
-    vehicleType: "Standard 42-Seater Bus"
-  },
-  {
-    id: 4,
-    routeName: "Route D — Outer Bijnor Belt",
-    distanceSlab: "15 – 22 km",
-    monthlyFee: "₹1,800 / month",
-    pickupPoints: "Chandpur Link Road, Outer Bypass, Green Valley Enclave",
-    vehicleType: "Dedicated School Bus"
-  }
-];
-
 export default function FeeSettingsPage() {
   const queryClient = useQueryClient();
   const [showFeeStructure, setShowFeeStructure] = useState(true);
   const [showTransportSlabs, setShowTransportSlabs] = useState(true);
-  const [sessionTag, setSessionTag] = useState("SESSION 2026-27");
-  const [accountsPhone, setAccountsPhone] = useState("+91 73519 96239");
-  const [accountsEmail, setAccountsEmail] = useState("accounts@sdmschool.in");
+  const [sessionTag, setSessionTag] = useState("");
+  const [accountsPhone, setAccountsPhone] = useState("");
+  const [accountsEmail, setAccountsEmail] = useState("");
   const [bankDetails, setBankDetails] = useState({
-    bankName: "State Bank of India (SBI)",
-    accountName: "SDM PUBLIC SCHOOL",
-    accountNumber: "389201928392",
-    ifscCode: "SBIN0001234",
-    upiId: "sdmschool@sbi"
+    bankName: "",
+    accountName: "",
+    accountNumber: "",
+    ifscCode: "",
+    upiId: ""
   });
 
-  const [feeTiers, setFeeTiers] = useState<FeeTier[]>(DEFAULT_FEE_TIERS);
-  const [transportRoutes, setTransportRoutes] = useState<TransportRoute[]>(DEFAULT_TRANSPORT_ROUTES);
+  const [feeTiers, setFeeTiers] = useState<FeeTier[]>([]);
+  const [transportRoutes, setTransportRoutes] = useState<TransportRoute[]>([]);
 
   // Modal states
   const [editingFee, setEditingFee] = useState<FeeTier | null>(null);
@@ -159,12 +89,20 @@ export default function FeeSettingsPage() {
       const cfg = data.fee_structure_config;
       if (typeof cfg.showFeeStructure === "boolean") setShowFeeStructure(cfg.showFeeStructure);
       if (typeof cfg.showTransportSlabs === "boolean") setShowTransportSlabs(cfg.showTransportSlabs);
-      if (cfg.sessionTag) setSessionTag(cfg.sessionTag);
-      if (cfg.accountsPhone) setAccountsPhone(cfg.accountsPhone);
-      if (cfg.accountsEmail) setAccountsEmail(cfg.accountsEmail);
-      if (cfg.bankDetails) setBankDetails((prev) => ({ ...prev, ...cfg.bankDetails }));
-      if (Array.isArray(cfg.feeTiers) && cfg.feeTiers.length > 0) setFeeTiers(cfg.feeTiers);
-      if (Array.isArray(cfg.transportRoutes) && cfg.transportRoutes.length > 0) setTransportRoutes(cfg.transportRoutes);
+      if (cfg.sessionTag !== undefined) setSessionTag(cfg.sessionTag || "");
+      if (cfg.accountsPhone !== undefined) setAccountsPhone(cfg.accountsPhone || "");
+      if (cfg.accountsEmail !== undefined) setAccountsEmail(cfg.accountsEmail || "");
+      if (cfg.bankDetails) {
+        setBankDetails({
+          bankName: cfg.bankDetails.bankName || "",
+          accountName: cfg.bankDetails.accountName || "",
+          accountNumber: cfg.bankDetails.accountNumber || "",
+          ifscCode: cfg.bankDetails.ifscCode || "",
+          upiId: cfg.bankDetails.upiId || ""
+        });
+      }
+      if (Array.isArray(cfg.feeTiers)) setFeeTiers(cfg.feeTiers);
+      if (Array.isArray(cfg.transportRoutes)) setTransportRoutes(cfg.transportRoutes);
     }
   }, [data]);
 
@@ -201,11 +139,11 @@ export default function FeeSettingsPage() {
   const openAddFeeModal = () => {
     setEditingFee({
       id: Date.now(),
-      wing: "Primary Wing",
-      classes: "Classes I to V",
-      quarterlyFee: "₹6,000",
-      monthlyEquiv: "₹2,000 / month",
-      highlights: ["Digital Classroom", "Computer Lab Access", "Sports & Library"]
+      wing: "",
+      classes: "",
+      quarterlyFee: "",
+      monthlyEquiv: "",
+      highlights: []
     });
     setIsFeeModalOpen(true);
   };
@@ -237,11 +175,11 @@ export default function FeeSettingsPage() {
   const openAddRouteModal = () => {
     setEditingRoute({
       id: Date.now(),
-      routeName: "New Transport Route",
-      distanceSlab: "5 – 10 km",
-      monthlyFee: "₹1,000 / month",
-      pickupPoints: "Key Village / Colony Stops",
-      vehicleType: "CCTV Bus"
+      routeName: "",
+      distanceSlab: "",
+      monthlyFee: "",
+      pickupPoints: "",
+      vehicleType: ""
     });
     setIsRouteModalOpen(true);
   };
@@ -358,54 +296,71 @@ export default function FeeSettingsPage() {
           </Button>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {feeTiers.map((tier) => (
-              <div
-                key={tier.id}
-                className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-blue-300 transition-all space-y-3 relative group flex flex-col justify-between"
+          {feeTiers.length === 0 ? (
+            <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+              <CreditCard className="mx-auto h-8 w-8 text-slate-300 mb-2" />
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">No Fee Tiers Configured</p>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                Configure your school's class-wise tuition slabs and quarterly fees.
+              </p>
+              <Button
+                type="button"
+                onClick={openAddFeeModal}
+                className="mt-4 h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold"
               >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">
-                      {tier.wing}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditingFee({ ...tier, highlights: [...tier.highlights] });
-                          setIsFeeModalOpen(true);
-                        }}
-                        className="p-1 text-slate-400 hover:text-blue-600 rounded-md"
-                      >
-                        <Pencil size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteFeeTier(tier.id)}
-                        className="p-1 text-slate-400 hover:text-rose-600 rounded-md"
-                      >
-                        <Trash2 size={13} />
-                      </button>
+                <Plus size={13} className="mr-1" /> Add Fee Tier
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {feeTiers.map((tier) => (
+                <div
+                  key={tier.id}
+                  className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-blue-300 transition-all space-y-3 relative group flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">
+                        {tier.wing}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingFee({ ...tier, highlights: [...tier.highlights] });
+                            setIsFeeModalOpen(true);
+                          }}
+                          className="p-1 text-slate-400 hover:text-blue-600 rounded-md cursor-pointer"
+                        >
+                          <Pencil size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteFeeTier(tier.id)}
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-md cursor-pointer"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </div>
+                    <h4 className="font-bold text-sm text-slate-900">{tier.classes}</h4>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/70">
+                      <p className="text-xl font-black text-slate-900">{tier.quarterlyFee}</p>
+                      <p className="text-[10px] text-slate-500 font-semibold">{tier.monthlyEquiv}</p>
+                    </div>
+                    <ul className="space-y-1 pt-1">
+                      {tier.highlights.map((h, hIdx) => (
+                        <li key={hIdx} className="text-[11px] text-slate-600 flex items-center gap-1.5">
+                          <CheckCircle2 size={11} className="text-emerald-500 shrink-0" />
+                          <span className="truncate">{h}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <h4 className="font-bold text-sm text-slate-900">{tier.classes}</h4>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200/70">
-                    <p className="text-xl font-black text-slate-900">{tier.quarterlyFee}</p>
-                    <p className="text-[10px] text-slate-500 font-semibold">{tier.monthlyEquiv}</p>
-                  </div>
-                  <ul className="space-y-1 pt-1">
-                    {tier.highlights.map((h, hIdx) => (
-                      <li key={hIdx} className="text-[11px] text-slate-600 flex items-center gap-1.5">
-                        <CheckCircle2 size={11} className="text-emerald-500 shrink-0" />
-                        <span className="truncate">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -428,58 +383,75 @@ export default function FeeSettingsPage() {
           </Button>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            {transportRoutes.map((route) => (
-              <div
-                key={route.id}
-                className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-blue-300 transition-all space-y-2 relative group flex flex-col justify-between"
+          {transportRoutes.length === 0 ? (
+            <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+              <Bus className="mx-auto h-8 w-8 text-slate-300 mb-2" />
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">No Transport Slabs Configured</p>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                Add distance slabs and monthly transport charges for your school routes.
+              </p>
+              <Button
+                type="button"
+                onClick={openAddRouteModal}
+                className="mt-4 h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold"
               >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-sm text-slate-900">{route.routeName}</h4>
-                      <Badge variant="outline" className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border-emerald-200">
-                        {route.distanceSlab}
-                      </Badge>
+                <Plus size={13} className="mr-1" /> Add Route Slab
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-4">
+              {transportRoutes.map((route) => (
+                <div
+                  key={route.id}
+                  className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-blue-300 transition-all space-y-2 relative group flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-sm text-slate-900">{route.routeName}</h4>
+                        <Badge variant="outline" className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border-emerald-200">
+                          {route.distanceSlab}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingRoute({ ...route });
+                            setIsRouteModalOpen(true);
+                          }}
+                          className="p-1 text-slate-400 hover:text-blue-600 rounded-md cursor-pointer"
+                        >
+                          <Pencil size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteRoute(route.id)}
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-md cursor-pointer"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditingRoute({ ...route });
-                          setIsRouteModalOpen(true);
-                        }}
-                        className="p-1 text-slate-400 hover:text-blue-600 rounded-md"
-                      >
-                        <Pencil size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteRoute(route.id)}
-                        className="p-1 text-slate-400 hover:text-rose-600 rounded-md"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/70">
-                    <div>
-                      <p className="text-xs text-slate-500 font-medium">Monthly Bus Fee</p>
-                      <p className="text-lg font-black text-slate-900">{route.monthlyFee}</p>
+                    <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/70">
+                      <div>
+                        <p className="text-xs text-slate-500 font-medium">Monthly Bus Fee</p>
+                        <p className="text-lg font-black text-slate-900">{route.monthlyFee}</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">
+                        {route.vehicleType}
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">
-                      {route.vehicleType}
-                    </span>
-                  </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong className="text-slate-800 font-semibold">Stops:</strong> {route.pickupPoints}
-                  </p>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      <strong className="text-slate-800 font-semibold">Stops:</strong> {route.pickupPoints}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -490,15 +462,25 @@ export default function FeeSettingsPage() {
             <Landmark size={16} className="text-blue-600" />
             Official Accounts & Online Payment Information
           </CardTitle>
+          <p className="text-xs text-slate-500 mt-0.5">Configure institutional banking details and accounts helpdesk contact info displayed on fee receipts and portals.</p>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+        <CardContent className="p-6 space-y-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="font-bold text-slate-600 mb-1 block">Bank Name</label>
               <Input
                 value={bankDetails.bankName}
                 onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
-                placeholder="State Bank of India"
+                placeholder="e.g. State Bank of India"
+                className="h-9 rounded-xl"
+              />
+            </div>
+            <div>
+              <label className="font-bold text-slate-600 mb-1 block">Account Holder Name</label>
+              <Input
+                value={bankDetails.accountName}
+                onChange={(e) => setBankDetails({ ...bankDetails, accountName: e.target.value })}
+                placeholder="e.g. School Official Name"
                 className="h-9 rounded-xl"
               />
             </div>
@@ -507,7 +489,7 @@ export default function FeeSettingsPage() {
               <Input
                 value={bankDetails.accountNumber}
                 onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value })}
-                placeholder="12-16 digit account number"
+                placeholder="e.g. 12-16 digit account number"
                 className="h-9 rounded-xl font-mono"
               />
             </div>
@@ -516,7 +498,7 @@ export default function FeeSettingsPage() {
               <Input
                 value={bankDetails.ifscCode}
                 onChange={(e) => setBankDetails({ ...bankDetails, ifscCode: e.target.value })}
-                placeholder="SBIN0001234"
+                placeholder="e.g. SBIN0001234"
                 className="h-9 rounded-xl font-mono"
               />
             </div>
@@ -525,7 +507,34 @@ export default function FeeSettingsPage() {
               <Input
                 value={bankDetails.upiId}
                 onChange={(e) => setBankDetails({ ...bankDetails, upiId: e.target.value })}
-                placeholder="sdmschool@sbi"
+                placeholder="e.g. schoolname@upi"
+                className="h-9 rounded-xl"
+              />
+            </div>
+            <div>
+              <label className="font-bold text-slate-600 mb-1 block">Academic Session Tag</label>
+              <Input
+                value={sessionTag}
+                onChange={(e) => setSessionTag(e.target.value)}
+                placeholder="e.g. SESSION 2026-27"
+                className="h-9 rounded-xl"
+              />
+            </div>
+            <div>
+              <label className="font-bold text-slate-600 mb-1 block">Accounts Desk Phone</label>
+              <Input
+                value={accountsPhone}
+                onChange={(e) => setAccountsPhone(e.target.value)}
+                placeholder="e.g. +91 98765 43210"
+                className="h-9 rounded-xl"
+              />
+            </div>
+            <div>
+              <label className="font-bold text-slate-600 mb-1 block">Accounts Desk Email</label>
+              <Input
+                value={accountsEmail}
+                onChange={(e) => setAccountsEmail(e.target.value)}
+                placeholder="e.g. accounts@school.edu"
                 className="h-9 rounded-xl"
               />
             </div>

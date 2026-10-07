@@ -15,7 +15,8 @@ import {
   Calendar,
   Filter,
   FileDown,
-  UserCheck
+  UserCheck,
+  KeyRound
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,10 +24,11 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { useAuth } from "@/components/AbilityProvider";
 import { APP_CONFIG } from "@/constants/config";
 import { ConfirmDialog } from "@/components/dialogbox/ConfirmDialog";
+import { ResetStaffPasswordDialog } from "./components/ResetStaffPasswordDialog";
 
 import { Skeleton, TableRowSkeleton } from "@/components/ui/skeleton";
 
@@ -44,6 +46,8 @@ export default function StaffPage() {
   const itemsPerPage = 10;
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [staffToDelete, setStaffToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [staffToReset, setStaffToReset] = useState<any | null>(null);
 
   // Query: Staff Registry
   const { data: staff = [], isLoading: loading } = useQuery<any[]>({
@@ -213,10 +217,22 @@ export default function StaffPage() {
                       </td>
                       <td className="py-4 px-8 text-right">
                         <div className="flex justify-end items-center gap-1.5">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setStaffToReset(member);
+                              setResetPasswordOpen(true);
+                            }}
+                            className="h-9 w-9 p-0 text-amber-500 hover:text-amber-700 hover:border-amber-200 border-slate-100 rounded-xl hover:bg-amber-50/50 transition-all cursor-pointer"
+                            title="Reset Password & Mail Credentials"
+                          >
+                            <KeyRound size={14} />
+                          </Button>
                           <Button variant="outline" size="sm" onClick={() => router.push(`/staff/timetable/${staffId}`)} className="h-9 w-9 p-0 text-emerald-500 hover:text-emerald-700 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer" title="Timetable"><Calendar size={14} /></Button>
-                          <Button variant="outline" size="sm" onClick={() => router.push(`/staff/view/${staffId}`)} className="h-9 w-9 p-0 text-slate-400 hover:text-blue-600 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer"><Eye size={14} /></Button>
-                          <Button variant="outline" size="sm" onClick={() => router.push(`/staff/edit/${staffId}`)} className="h-9 w-9 p-0 text-slate-400 hover:text-slate-600 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer"><Edit3 size={14} /></Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDelete(staffId, member.name)} className="h-9 w-9 p-0 text-slate-400 hover:text-red-600 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer"><Trash2 size={14} /></Button>
+                          <Button variant="outline" size="sm" onClick={() => router.push(`/staff/view/${staffId}`)} className="h-9 w-9 p-0 text-slate-400 hover:text-blue-600 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer" title="View Profile"><Eye size={14} /></Button>
+                          <Button variant="outline" size="sm" onClick={() => router.push(`/staff/edit/${staffId}`)} className="h-9 w-9 p-0 text-slate-400 hover:text-slate-600 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer" title="Edit Profile"><Edit3 size={14} /></Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete(staffId, member.name)} className="h-9 w-9 p-0 text-slate-400 hover:text-red-600 border-slate-100 rounded-xl hover:bg-slate-50 transition-all cursor-pointer" title="Delete Faculty"><Trash2 size={14} /></Button>
                         </div>
                       </td>
                     </tr>
@@ -292,6 +308,15 @@ export default function StaffPage() {
         title="Delete Staff Record?"
         description={staffToDelete ? `This will permanently remove ${staffToDelete.name} and retract all class period assignments.` : "This will permanently remove this staff member and retract all class period assignments."}
         type="danger"
+      />
+
+      <ResetStaffPasswordDialog
+        isOpen={resetPasswordOpen}
+        onClose={() => {
+          setResetPasswordOpen(false);
+          setStaffToReset(null);
+        }}
+        staff={staffToReset}
       />
     </div>
   );

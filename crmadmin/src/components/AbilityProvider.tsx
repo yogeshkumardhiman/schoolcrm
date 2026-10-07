@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useRouter } from '@bprogress/next/app';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import client from '@/lib/client';
 import { APP_CONFIG } from '@/constants/config';
@@ -12,6 +13,7 @@ interface AuthContextType {
   loading: boolean;
   permissions: Set<string>;
   syncProfile: () => Promise<void>;
+  logout: () => void;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────
@@ -19,7 +21,7 @@ const AuthContext = createContext<AuthContextType>(null!);
 
 // ─── Hooks ───────────────────────────────────────────────────────────
 
-/** Core auth hook — returns user, loading state, permissions set, and syncProfile */
+/** Core auth hook — returns user, loading state, permissions set, syncProfile, and logout */
 export function useAuth() {
   return useContext(AuthContext);
 }
@@ -124,6 +126,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await refetch();
   }, [queryClient, refetch]);
 
+  const logout = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const { tokens } = APP_CONFIG.auth;
+    Object.values(tokens).forEach((key) => localStorage.removeItem(key));
+    localStorage.removeItem('sdm_auth_token');
+    localStorage.removeItem(`${process.env.NEXT_PUBLIC_STORAGE_PREFIX}_active_session`);
+
+    const pastDate = 'Thu, 01 Jan 1970 00:00:01 GMT';
+    document.cookie = `${tokens.auth}=; path=/; expires=${pastDate};`;
+    document.cookie = `sdm_auth_token=; path=/; expires=${pastDate};`;
+
+    setUser(null);
+    setPermissions(new Set());
+    queryClient.clear();
+    window.dispatchEvent(new Event('crm_auth_update'));
+    router.replace('/login');
+  }, [queryClient, router]);
+
   useEffect(() => {
     if (profileData) {
       if (profileData.role) localStorage.setItem(APP_CONFIG.auth.tokens.role, profileData.role);
@@ -139,6 +159,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (typeof window === 'undefined') return;
 
     const currentToken = localStorage.getItem(APP_CONFIG.auth.tokens.auth) || localStorage.getItem('sdm_auth_token');
+
+    // Sync cookies if token exists in localStorage but cookie is missing
+    if (currentToken && typeof document !== 'undefined') {
+      const hasCookie = document.cookie.includes('sdm_auth_token');
+      if (!hasCookie) {
+        const isSecure = window.location.protocol === 'https:';
+        const secureFlag = isSecure ? '; Secure' : '';
+        document.cookie = `${APP_CONFIG.auth.tokens.auth}=${encodeURIComponent(currentToken)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+        document.cookie = `sdm_auth_token=${encodeURIComponent(currentToken)}; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+      }
+    }
 
     if (!currentToken && !isAuthPage) {
       router.replace('/login');
@@ -171,7 +202,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [syncProfile, router, isAuthPage]);
 
   return (
-    <AuthContext.Provider value={{ user, loading: queryLoading, permissions, syncProfile }}>
+    <AuthContext.Provider value={{ user, loading: queryLoading, permissions, syncProfile, logout }}>
       {children}
     </AuthContext.Provider>
   );
